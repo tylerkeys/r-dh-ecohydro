@@ -7,7 +7,7 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_pw_it <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid_code, search_code, token){
+elf_pw_it <- function(inputs = list(glo = 100, ghi = 500), data, x_metric_code, Feature.Name_code, Hydroid_code, search_code, token){
 
   x_metric <- x_metric_code
   Feature.Name <- Feature.Name_code
@@ -28,6 +28,8 @@ elf_pw_it <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid_co
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
+  glo <- inputs$glo
+  ghi <- inputs$ghi
   
         
         dme <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
@@ -41,7 +43,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid_co
         y <- dme$metric_value
 
         #set initial guess range
-        breaks <- x[which(x >= 100 & x <= 500)]
+        breaks <- x[which(x >= glo & x <= ghi)]
 #        breaks <- x[which(x >= .001 & x <= xaxis_thresh)]
         as.numeric(breaks)
         

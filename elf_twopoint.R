@@ -1,0 +1,203 @@
+library(quantreg);
+library(ggplot2);
+library(ggrepel);
+library(ggpmisc);
+library(grid);
+library(httr);
+library(data.table);
+library(scales);
+
+elf_twopoint <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid_code, search_code, token){
+
+  x_metric <- x_metric_code
+  Feature.Name <- Feature.Name_code
+  Hydroid <- Hydroid_code
+  
+  #Load inputs
+  pct_chg <- inputs$pct_chg 
+  save_directory <- inputs$save_directory 
+  y_metric <- inputs$y_metric 
+  ws_ftype <- inputs$ws_ftype
+  target_hydrocode <- inputs$target_hydrocode
+  quantile <- inputs$quantile  
+  xaxis_thresh <- inputs$xaxis_thresh
+  send_to_rest <- inputs$send_to_rest
+  offset <- inputs$offset
+  startdate <- inputs$startdate
+  enddate <- inputs$enddate
+  station_agg <- inputs$station_agg
+  site <- inputs$site
+  sampres <- inputs$sampres
+  
+
+        dme <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
+        bigger.da <- dme;
+        
+        #If statement needed in case there ae fewer than 3 datapoints to the left of x-axis inflection point
+        if(nrow(dme) > 5) {  
+         
+            #regression 
+            x <- dme$attribute_value
+            y <- dme$metric_value
+            
+            ymax <- max(y) #finds the max y-value
+            xmin <- min(x) #finds the minimum x-value
+            x.ymax <- subset(dme, dme$metric_value == ymax) #finds all the x-values associated with that max y-value
+            xmin.ymax <- min(x.ymax$attribute_value) #finds the point with the smallest x-value associated with that max y-value
+            y.xmin <- subset(dme, dme$attribute_value == xmin) #finds all the y-values associated with the minimum x-value
+            ymax.xmin <- max(y.xmin$metric_value) #finds the point with the highest x-value associated with that min x-value
+            
+            print(xmin.ymax) 
+            
+            #This is necessary in case the two points are in the same spot 
+            if(xmin != xmin.ymax) {
+
+            #creates data frame with the values we just extracted
+            twopt <- as.data.frame(matrix(c(xmin,ymax.xmin,xmin.ymax,ymax), ncol=2, byrow = TRUE))
+          #print(twopt)
+            
+            regline <- lm(V2 ~ log(V1),data = twopt)
+            rl <- summary(regline)
+            #print (rl)
+            rl.int <- round(rl$coefficients[1,1], digits = 6) #intercept 
+            rl.slope <- round(rl$coefficients[2,1], digits = 6) #slope of regression
+            rl.count <- length(dme$metric_value)
+            
+            #Set yaxis threshold = to maximum biometric value in database 
+            yaxis_thresh <- paste(site,"/femetric-ymax/",y_metric, sep="")
+            yaxis_thresh <- read.csv(yaxis_thresh , header = TRUE, sep = ",")
+            yaxis_thresh <- yaxis_thresh$metric_value
+            print (paste("Setting ymax = ", yaxis_thresh));
+           
+            #retreive metric varids and varnames
+            metric_definitions <- paste(site,"/?q=/fe_metric_export",sep="");
+            metric_table <- read.table(metric_definitions,header = TRUE, sep = ",")
+            
+            biometric_row <- which(metric_table$varkey == y_metric)
+            biomeric_name <- metric_table[biometric_row,]
+            biometric_title <- biomeric_name$varname                #needed for human-readable plot titles
+            y_metric_varid <- biomeric_name$varid                   #needed for admincode
+            
+            flow_row <- which(metric_table$varkey == x_metric)
+            flow_name <- metric_table[flow_row,]
+            flow_title <- flow_name$varname                         #needed for human-readable plot titles
+            x_metric_varid <- flow_name$varid                       #needed for admincode
+            
+            #Ensuring uniqueness in submittal admincodes (coding beacuse of limited admincode characters)
+            if (station_agg == 'max') {
+              statagg <- 1
+            } else {
+              statagg <- 2
+            }
+            
+            if (sampres == 'species') {
+              smprs <- 1
+            } else if(sampres == 'maj_fam_gen_spec') {
+              smprs <- 2
+            } else if(sampres == 'maj_fam_gen') {
+              smprs <- 3
+            } else if(sampres == 'maj_fam') {
+              smprs <- 4
+            } else if (sampres == 'maj_spec') {
+              smprs <- 5
+            }
+            
+admincode <- paste(Hydroid,"twopoint",x_metric_varid,y_metric_varid,"-9999",statagg,smprs,startdate,enddate, sep='_');
+            
+            # stash the regression statistics using REST  
+            if (send_to_rest == 'YES') {
+              
+            qd <- list(
+              featureid = Hydroid,
+              admincode = admincode,
+              name = paste( "Two-Point, ", y_metric, ' = f( ', x_metric, ' )', sep=''),
+              ftype = 'fe_twopoint',
+              startdate = startdate,
+              enddate = enddate,
+	            site = site,
+              x = x_metric,
+              y = y_metric,
+              stats = list(
+                stat_quantreg_m = rl.slope,
+                stat_quantreg_b = rl.int,
+                stat_quantreg_n = rl.count,
+                stat_quantreg_p = "-9999",
+                stat_quantreg_rsq = "-9999",
+                stat_quantreg_adj_rsq = "-9999",
+                stat_quantreg_qu = "-9999",
+                stat_quantreg_x = x_metric,
+                stat_quantreg_y = y_metric,
+                station_agg =station_agg,
+                sampres = sampres,
+                stat_quantreg_bkpt = xmin.ymax
+                
+              )
+            );
+print("Storing quantile regression.");
+            qd;
+            elf_store_data (qd, token)
+            }
+
+            #Display only 3 significant digits on plots
+            plot_rl.slope <- signif(rl.slope, digits = 3)
+            plot_rl.int <- signif(rl.int, digits = 3)
+
+            #Plot titles
+            plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+            xaxis_title <- paste(flow_title,"\n","\n","m: ", plot_rl.slope,"    b: ",plot_rl.int,"    n: ",rl.count,sep="");
+            yaxis_title <- paste(biometric_title);
+
+print (paste("Plotting ELF"));            
+            ggplot()+
+              ylim(0,yaxis_thresh)+
+              geom_point(data = dme, aes(x=attribute_value, y=metric_value,colour="blue"))+
+              geom_smooth(data = twopt, method = "lm", se = FALSE, aes(x=V1,y=V2,colour="red"))+
+              ggtitle(plot_title)+
+              theme(plot.title = element_text(size = 12, face = "bold"))+
+              labs(x=xaxis_title,y=yaxis_title)+
+              scale_x_log10(
+                limits = c(0.001,xaxis_thresh),
+                breaks = trans_breaks("log10", function(x) {10^x}),
+                labels = trans_format("log10", math_format(10^.x))
+              ) + 
+              annotation_logticks(sides = "b")+
+              theme(legend.key=element_rect(fill='white'))+
+            #Add legend
+              scale_color_manual("Legend",values=c("blue","black"),
+              labels=c("EDAS Stations                     .","Two-Point Model Fit"))+
+              #labels=c("EDAS Stations (Upper 20%)","Two-Point Model Fit"))+
+              guides(colour = guide_legend(override.aes = list(
+                    linetype=c(0,1), 
+                    shape=c(16,NA)),
+                    label.position = "right")
+                    ); 
+            
+            # END plotting function
+              filename <- paste(admincode,"elf.png", sep="_")
+              ggsave(file=filename, path = save_directory, width=8, height=5)
+print (paste("Plotting Barplot"));              
+             #slope barplot  
+              pct_inputs<- list(ruslope = rl.slope, 
+                                ruint = rl.int,
+                                biometric_title = biometric_title, 
+                                flow_title = flow_title,
+                                Feature.Name = Feature.Name,
+                                pct_chg = pct_chg,
+                                startdate = startdate,
+                                enddate = enddate)
+              elf_pct_chg (pct_inputs)
+    
+              filename <- paste(admincode,"barplot.png", sep="_")
+              ggsave(file=filename, path = save_directory, width=8, height=5)
+
+
+              
+                } else { 
+                  print(paste("... Skipping (xmin == xmin.ymax for ", search_code,")", sep=''));
+                }
+              
+              } else { 
+                print(paste("... Skipping (fewer than 5 datapoints to the left of x-axis threshold in ", search_code,")", sep=''));
+              }           
+              
+} #close function
