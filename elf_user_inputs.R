@@ -1,33 +1,61 @@
 rm(list = ls())  #clear variables
 #library(httr);   #Load httr package
-
+ 
 #----------------------------------------------
 site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d.bet OR d.dh
 #----------------------------------------------
 
 #----FOR RUNNING LOCALLY:
-fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\FE Batch Processing\\"          #Specify location of supporting function .R files
-save_directory <- "C:\\Users\\nrf46657\\Desktop\\FE Batch Processing\\plots"  #Specify location for storing plot images locally
+##fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\"          #Specify location of supporting function .R files
+##save_directory <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\plots"  #Specify location for storing plot images locally
 
 #----FOR RUNNING FROM SERVER:
-#fxn_locations <- "/var/www/html/files/fe/elf_codes/fe_master_3.20.2017/"
-#save_directory <- "/var/www/html/files/fe/plots"
+fxn_locations <- "/var/www/html/files/fe/elf_codes/fe_master_6.12.2017/"
+save_directory <- "/var/www/html/files/fe/plots"
 
 #------------------------------------------------------------------------------------------------
 #User inputs 
 inputs <- list(
   site = site,
-  offset = 1,                      #Leave at 1 to start from begining of x_metric for-loop
-  offset2 =1,                      #Leave at 1 to start from begining of Watershed_Hydrocode for-loop
-  pct_chg = 10,                    #Percent decrease in flow for barplots (keep at 10 for now)
+  offset_x_metric = 1,                      #Leave at 1 to start from begining of x_metric for-loop
+  offset_y_metric = 1,                      #Leave at 1 to start from begining of y_metric for-loop
+  offset_ws_ftype = 1,                      #Leave at 1 to start from begining of ws_ftype for-loop
+  offset_hydrocode = 1,                     #Leave at 1 to start from begining of Watershed_Hydrocode for-loop
+  pct_chg = 10,                             #Percent decrease in flow for barplots (keep at 10 for now)
   save_directory = save_directory, 
- # x_metric = c('nhdp_drainage_sqkm','erom_q0001e_mean','erom_q0001e_jan','erom_q0001e_feb',
- #               'erom_q0001e_mar','erom_q0001e_apr','erom_q0001e_may',
- #               'erom_q0001e_june','erom_q0001e_july','erom_q0001e_aug',
- #               'erom_q0001e_sept','erom_q0001e_oct','erom_q0001e_nov','erom_q0001e_dec'),		
-  x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
+  x_metric = c(
+    'nhdp_drainage_sqkm',
+    'erom_q0001e_mean',
+    'erom_q0001e_jan',
+    'erom_q0001e_feb',
+    'erom_q0001e_mar', 
+    'erom_q0001e_apr', 
+    'erom_q0001e_may',
+    'erom_q0001e_june',
+    'erom_q0001e_july',
+    'erom_q0001e_aug',
+    'erom_q0001e_sept',
+    'erom_q0001e_oct',
+    'erom_q0001e_nov',
+    'erom_q0001e_dec'
+  ),		
+  #x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
+  #y_metric = c('aqbio_nt_total',
+  #             'aqbio_nt_sunfish'
+  #            ),
   y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
-  ws_ftype = 'hwi_region',		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
+  ws_ftype = c(
+    #'state',
+    'hwi_region',
+    'nhd_huc6',
+    'nhd_huc8',
+    'nhd_huc10',
+    'nhd_huc12',
+    'ecoregion_iii',
+    'ecoregion_iv',
+    'ecoiii_huc6'
+  ),
+  #ws_ftype = 'nhd_huc8',		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
   target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
@@ -46,7 +74,9 @@ inputs <- list(
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
   ymax = "YES",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  twopoint = "YES"    #Plot using basic two-point ELF method (YES or NO)
+  twopoint = "YES",    #Plot using basic two-point ELF method (YES or NO)
+  glo = 100,  # Breakpoint flow (cfs) lower boundary value for PWIT method
+  ghi = 500 # breakpoint flow (cfs) upper boundary value for PWIT method
 ) 
 
 #------------------------------------------------------------------------------------------------

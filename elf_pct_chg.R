@@ -8,8 +8,8 @@ elf_pct_chg <- function(pct_inputs = list()){
   sampres <- pct_inputs$sampres
   startdate <- pct_inputs$startdate
   enddate <- pct_inputs$enddate
-  
-  
+ 
+
 #pct_chg <- 10
 
 pct_1 <- (1 -((pct_chg/100)*1))

@@ -7,17 +7,17 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_quantreg <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid_code, search_code, token){
+elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token){
 
   x_metric <- x_metric_code
+  y_metric <- y_metric_code
   Feature.Name <- Feature.Name_code
   Hydroid <- Hydroid_code
+  ws_ftype <- ws_ftype_code
   
   #Load inputs
   pct_chg <- inputs$pct_chg 
   save_directory <- inputs$save_directory 
-  y_metric <- inputs$y_metric 
-  ws_ftype <- inputs$ws_ftype
   target_hydrocode <- inputs$target_hydrocode
   quantile <- inputs$quantile  
   xaxis_thresh <- inputs$xaxis_thresh
@@ -29,31 +29,29 @@ elf_quantreg <- function(inputs, data, x_metric_code, Feature.Name_code, Hydroid
   site <- inputs$site
   sampres <- inputs$sampres
 
+  data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
+  full_dataset <- data
+  
+  data<-data[!(data$drainage_area > 500),]
+  subset_n <- length(data$metric_value)
 
   stat_quantreg_bkpt <- 500
-  
-        dme <- subset(data, attribute_value >= .001 & attribute_value < stat_quantreg_bkpt);
-        bigger.da <- dme;
-        #summary(fit <- lm(dme$metric_value ~ log(dme$attribute_value))) 
-        
-        #print(data)
-        #print(dme)
-        
-        #If statement needed in case there are fewer than 3 datapoints to the left of x-axis inflection point
-        if(nrow(dme) > 3) {  
+
+        #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point
+        if(nrow(data) > 3) {  
           
-          up90 <- rq(metric_value ~ log(attribute_value),data = dme, tau = quantile) #calculate the quantile regression
-          newy <- c(log(dme$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
-          upper.quant <- subset(dme, dme$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
+          up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
+          newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
+          upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
           
 print(paste("Upper quantile has ", nrow(upper.quant), "values"));
-          #If statement needed in case there ae fewer than 3 datapoints in upper quantile of data set
-          if (nrow(upper.quant) > 6) {
+          #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
+          if (nrow(upper.quant) > 3) {
 
             regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
             ru <- summary(regupper)                                                  #regression for upper quantile
-            print(ru)
-            print(ru$coefficients)
+            #print(ru)
+            #print(ru$coefficients)
             ruint <- round(ru$coefficients[1,1], digits = 6)                         #intercept 
             ruslope <- round(ru$coefficients[2,1], digits = 6)                       #slope of regression
             rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
@@ -61,14 +59,14 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             rup <- round(ru$coefficients[2,4], digits = 6)                           #p-value of upper quantile
             rucor <-round(cor.test(log(upper.quant$attribute_value),upper.quant$metric_value)$estimate, digits = 6) #correlation coefficient of upper quantile
             rucount <- length(upper.quant$metric_value)
-            regfull <- lm(metric_value ~ log(attribute_value),data = dme)            
+            regfull <- lm(metric_value ~ log(attribute_value),data = data)            
             rf <- summary(regfull)                                                   #regression for full dataset
             rfint <- round(rf$coefficients[1,2], digits = 6)                         #intercept 
             rfslope <- round(rf$coefficients[2,1], digits = 6)                       #slope of regression
             rfrs <- round(rf$r.squared, digits = 6)                                  #r squared of full dataset linear regression
             rfp <- round(rf$coefficients[2,4], digits = 6)                           #p-value of full dataset
-            rfcor <- round(cor.test(log(dme$attribute_value),dme$metric_value)$estimate, digits = 6) #correlation coefficient of full dataset
-            rfcount <- length(dme$metric_value) 
+            rfcor <- round(cor.test(log(data$attribute_value),data$metric_value)$estimate, digits = 6) #correlation coefficient of full dataset
+            rfcount <- length(data$metric_value) 
             
             #Set yaxis threshold = to maximum biometric value in database 
             yaxis_thresh <- paste(site,"/femetric-ymax/",y_metric, sep="")
@@ -153,22 +151,23 @@ print("Storing quantile regression.");
             plot_rup <- signif(rup, digits = 3)
 
             #Plot titles
-            plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
-            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"    n: ",rucount,sep="");
+            plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (breakpoint at DA = 500 sqkm)",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,sep="");
             yaxis_title <- paste(biometric_title);
-            EDAS_upper_legend <- paste("EDAS Stations (Upper ",((1 - quantile)*100),"%)",sep="");
+            EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
             Reg_upper_legend <- paste("Regression (Upper ",((1 - quantile)*100),"%)",sep="");       
-            Quantile_Legend <- paste(quantile," Quantile (Full Dataset)",sep=""); 
-            EDAS_lower_legend <- paste("EDAS Stations (Lower ",(100-((1 - quantile)*100)),"%)",sep="");
+            Quantile_Legend <- paste(quantile," Quantile (Data Subset)",sep=""); 
+            EDAS_lower_legend <- paste("Data Subset (Lower ",(100-((1 - quantile)*100)),"%)",sep="");
 
 print (paste("Plotting ELF"));
             # START - plotting function
-            plt <- ggplot(dme, aes(x=attribute_value,y=metric_value)) + ylim(0,yaxis_thresh) + 
-              geom_point(data = bigger.da,aes(colour="blue")) + 
+            plt <- ggplot(data, aes(x=attribute_value,y=metric_value)) + ylim(0,yaxis_thresh) + 
+              geom_point(data = full_dataset,aes(colour="aliceblue")) +
+              geom_point(data = data,aes(colour="blue")) + 
               stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=attribute_value,y=metric_value,color = "red")) +
               geom_point(data = upper.quant, aes(x=attribute_value,y=metric_value,color = "black")) + 
-              geom_quantile(data = dme, quantiles= quantile,show.legend = TRUE,aes(color="red")) + 
-              geom_smooth(data = dme, method="lm",formula=y ~ x,show.legend = TRUE, aes(colour="yellow"),se=FALSE) + 
+              geom_quantile(data = data, quantiles= quantile,show.legend = TRUE,aes(color="red")) + 
+              geom_smooth(data = data, method="lm",formula=y ~ x,show.legend = TRUE, aes(colour="yellow"),se=FALSE) + 
               geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=attribute_value,y=metric_value,color = "green"),se=FALSE) + 
               ggtitle(plot_title) + 
               theme(
@@ -185,14 +184,14 @@ print (paste("Plotting ELF"));
               #Add legend
               scale_color_manual(
                 "Legend",
-                values=c("green","blue","orange","black","red"),
-                labels=c(EDAS_upper_legend,EDAS_lower_legend,Reg_upper_legend,Quantile_Legend,"Regression (Full Dataset)")
+                values=c("gray66","forestgreen","blue","orange","black","red"),
+                labels=c("Full Dataset",EDAS_upper_legend,EDAS_lower_legend,Reg_upper_legend,Quantile_Legend,"Regression (Data Subset)")
               ) + 
               guides(
                 colour = guide_legend(
                   override.aes = list(
-                    linetype=c(0,0,1,1,1), 
-                    shape=c(16,16,NA,NA,NA)
+                    linetype=c(0,0,0,1,1,1), 
+                    shape=c(16,16,16,NA,NA,NA)
                   ),
                   label.position = "right"
                 )
@@ -200,8 +199,13 @@ print (paste("Plotting ELF"));
             
             # END plotting function
               filename <- paste(admincode,"elf.png", sep="_")
-              ggsave(file=filename, path = save_directory, width=8, height=5)
+              ggsave(file=filename, path = save_directory, width=8, height=6)
+
+              
 print (paste("Plotting Barplot"));
+print (paste("ELF Slope: ",ruslope,sep="")); 
+if (ruslope >= 0){
+
              #slope barplot  
               pct_inputs<- list(ruslope = ruslope, 
                                 ruint = ruint,
@@ -216,13 +220,16 @@ print (paste("Plotting Barplot"));
               
               filename <- paste(admincode,"barplot.png", sep="_")
               ggsave(file=filename, path = save_directory, width=8, height=5)
-         
+} else {
+     print (paste("Slope is negative, not generating barplot"));        
+}  
+              
           } else {
-              print(paste("... Skipping (fewer than 6 datapoints in upper quantile of ", search_code,")", sep=''));
+              print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));
           }   
                    
         } else {
-          print(paste("... Skipping (fewer than 3 datapoints to the left of x-axis inflection point in ", search_code,")", sep=''));
+          print(paste("... Skipping (fewer than 4 datapoints to the left of x-axis inflection point in ", search_code,")", sep=''));
         }   
         
 } #close function

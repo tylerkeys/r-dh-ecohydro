@@ -91,7 +91,9 @@ print(sq);
     'stat_quantreg_qu',
     'station_agg',
     'sampres',
-    'stat_quantreg_bkpt'
+    'stat_quantreg_bkpt',
+    'stat_quantreg_pwit_lower',
+    'stat_quantreg_pwit_upper'
   );
   proplist <- list(
     stat_quantreg_m = FALSE,
@@ -105,7 +107,9 @@ print(sq);
     stat_quantreg_qu = FALSE,
     station_agg =FALSE,
     sampres = FALSE,
-    stat_quantreg_bkpt = FALSE
+    stat_quantreg_bkpt = FALSE,
+    stat_quantreg_pwit_lower = FALSE,
+    stat_quantreg_pwit_upper = FALSE
   );
 
 #print (propdef_url);
