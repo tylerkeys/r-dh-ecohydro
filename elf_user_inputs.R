@@ -1,5 +1,6 @@
 rm(list = ls())  #clear variables
 #library(httr);   #Load httr package
+options(timeout=120); # set timeout to twice default level to avoid abort due to high traffic
  
 #----------------------------------------------
 site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d.bet OR d.dh
@@ -10,7 +11,7 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 ##save_directory <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\plots"  #Specify location for storing plot images locally
 
 #----FOR RUNNING FROM SERVER:
-fxn_locations <- "/var/www/html/files/fe/elf_codes/fe_master_6.12.2017/"
+fxn_locations <- "/var/www/R/r-dh-ecohydro/"
 save_directory <- "/var/www/html/files/fe/plots"
 
 #------------------------------------------------------------------------------------------------
@@ -39,13 +40,15 @@ inputs <- list(
     'erom_q0001e_nov',
     'erom_q0001e_dec'
   ),		
-  #x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
-  #y_metric = c('aqbio_nt_total',
-  #             'aqbio_nt_sunfish'
-  #            ),
-  y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
-  ws_ftype = c(
-    #'state',
+  #x_metric = 'erom_q0001e_mar', #Flow metric to be plotted on the x-axis
+  dis_y_metric = c(
+               'aqbio_nt_cent',
+               'aqbio_nt_bival',
+               'aqbio_nt_cypr_native'
+              ),
+  y_metric = 'aqbio_nt_cypr_native',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  disabled_ws_ftype = c(
+    'state',
     'hwi_region',
     'nhd_huc6',
     'nhd_huc8',
@@ -55,7 +58,7 @@ inputs <- list(
     'ecoregion_iv',
     'ecoiii_huc6'
   ),
-  #ws_ftype = 'nhd_huc8',		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
+  ws_ftype = c('nhd_huc8'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
   target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
