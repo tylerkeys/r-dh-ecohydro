@@ -46,7 +46,7 @@ inputs <- list(
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_benthic_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_benthic_nt_ept',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -75,10 +75,10 @@ inputs <- list(
                                    #   maj_fam...............majority family (Benthics only)
                                    #   maj_species..............majority species (Benthics only)
   
-  quantreg = "NO",  #Plot using quantile regression method (YES or NO)
-  ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  quantreg = "YES",  #Plot using quantile regression method (YES or NO)
+  ymax = "YES",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
+  twopoint = "YES",    #Plot using basic two-point ELF method (YES or NO)
   glo = 1,  # Breakpoint flow (cfs) lower boundary value for PWIT method
   ghi = 500 # breakpoint flow (cfs) upper boundary value for PWIT method
 ) 

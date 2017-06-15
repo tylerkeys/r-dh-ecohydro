@@ -40,6 +40,8 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   duplicates <- unique(data$attribute_value, incomparables = FALSE)
   if(nrow(data) && length(duplicates) > 3) {  
           
+
+    
           up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
           newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
           upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
@@ -52,6 +54,11 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             ru <- summary(regupper)                                                  #regression for upper quantile
             #print(ru)
             #print(ru$coefficients)
+            #print(nrow(ru$coefficients))
+            
+            #If statement needed in case slope is "NA"
+            if (nrow(ru$coefficients) > 1) {
+            
             ruint <- round(ru$coefficients[1,1], digits = 6)                         #intercept 
             ruslope <- round(ru$coefficients[2,1], digits = 6)                       #slope of regression
             rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
@@ -228,6 +235,10 @@ print (paste("Plotting ELF"));
         print (paste("Slope is negative, not generating barplot"));        
       } 
             
+            } else {
+              print(paste("... Skipping slope is 'NA' for ", search_code,")", sep=''));
+            }   
+      
           } else {
               print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));
           }   

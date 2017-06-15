@@ -61,6 +61,10 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       ru <- summary(regupper)                                                  #regression for upper quantile
       #print(ru)
       #print(ru$coefficients)
+      
+      #If statement needed in case slope is "NA"
+      if (nrow(ru$coefficients) > 1) {
+        
       ruint <- round(ru$coefficients[1,1], digits = 6)                         #intercept 
       ruslope <- round(ru$coefficients[2,1], digits = 6)                       #slope of regression
       rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
@@ -236,6 +240,10 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       } else {
         print (paste("Slope is negative, not generating barplot"));        
       } 
+      
+      } else {
+        print(paste("... Skipping slope is 'NA' for ", search_code,")", sep=''));
+      }   
       
     } else {
       print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));
