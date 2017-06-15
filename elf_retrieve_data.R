@@ -19,6 +19,7 @@ elf_retrieve_data <- function(inputs = list()){
   offset_ws_ftype <- inputs$offset_ws_ftype
   offset_hydrocode <- inputs$offset_hydrocode
   site <- inputs$site
+  xaxis_thresh <- inputs$xaxis_thresh
   sampres <- inputs$sampres
   startdate <- inputs$startdate
   enddate <- inputs$enddate
@@ -113,6 +114,9 @@ for (k in offset_y_metric:length(y_metric)) {
         aa <- aa[order(aa$hydrocode, aa$metric_value),]
         data <- aa
       }
+      
+      #subsets data to exclude anything with a flowmetric value greater than the "xaxis_thresh" specified in the user inputs file
+      data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
       
       #Export data as spreadsheet
       ##write.table(data, paste(save_directory,"data.tsv",sep=""), sep="\t")

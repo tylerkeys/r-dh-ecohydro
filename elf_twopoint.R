@@ -29,7 +29,6 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   site <- inputs$site
   sampres <- inputs$sampres
   
-  data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
   full_dataset <- data
 
   x <- data$attribute_value
@@ -174,20 +173,20 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       print (paste("ELF Y-Intercept: ",ruint,sep="")); 
       if (ruslope >= 0){
         if (ruint >= 0){
-        
-        #slope barplot  
-        pct_inputs<- list(ruslope = ruslope, 
-                          ruint = ruint,
-                          biometric_title = biometric_title, 
-                          flow_title = flow_title,
-                          Feature.Name = Feature.Name,
-                          pct_chg = pct_chg,
-                          startdate = startdate,
-                          enddate = enddate)
-        elf_pct_chg (pct_inputs)
-        
-        filename <- paste(admincode,"barplot.png", sep="_")
-        ggsave(file=filename, path = save_directory, width=8, height=5)
+          
+          #slope barplot  
+          pct_inputs<- list(ruslope = ruslope, 
+                            ruint = ruint,
+                            biometric_title = biometric_title, 
+                            flow_title = flow_title,
+                            Feature.Name = Feature.Name,
+                            pct_chg = pct_chg,
+                            startdate = startdate,
+                            enddate = enddate)
+          elf_pct_chg (pct_inputs)
+          
+          filename <- paste(admincode,"barplot.png", sep="_")
+          ggsave(file=filename, path = save_directory, width=8, height=5)
         } else {
           print (paste("Y-Intercept is negative, not generating barplot"));        
         }  

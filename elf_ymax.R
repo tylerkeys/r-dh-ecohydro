@@ -29,8 +29,9 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
   site <- inputs$site
   sampres <- inputs$sampres
   
-  data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
   full_dataset <- data
+  
+ # print(data)
   
   x <- data$attribute_value
   y <- data$metric_value
@@ -38,15 +39,16 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
   ymax <- max(y) #finds the max y-value
   x.ymax <- subset(data, data$metric_value == ymax)
   breakpt <- min(x.ymax$attribute_value)
-
+  
     data<-data[!(data$attribute_value > breakpt),]
     subset_n <- length(data$metric_value)
-    
+
     stat_quantreg_bkpt <-  breakpt
 
-  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point
-  if(nrow(data) > 3) {  
-    
+  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
+    duplicates <- unique(data$attribute_value, incomparables = FALSE)
+    if(nrow(data) && length(duplicates) > 3) {  
+
     up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
     newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
     upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
@@ -211,25 +213,29 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       
       print (paste("Plotting Barplot"));
       print (paste("ELF Slope: ",ruslope,sep="")); 
+      print (paste("ELF Y-Intercept: ",ruint,sep="")); 
       if (ruslope >= 0){
-        
-        #slope barplot  
-        pct_inputs<- list(ruslope = ruslope, 
-                          ruint = ruint,
-                          biometric_title = biometric_title, 
-                          flow_title = flow_title,
-                          Feature.Name = Feature.Name,
-                          pct_chg = pct_chg,
-                          sampres = sampres,
-                          startdate = startdate,
-                          enddate = enddate)
-        elf_pct_chg (pct_inputs)
-        
-        filename <- paste(admincode,"barplot.png", sep="_")
-        ggsave(file=filename, path = save_directory, width=8, height=5)
+        if (ruint >= 0){
+          
+          #slope barplot  
+          pct_inputs<- list(ruslope = ruslope, 
+                            ruint = ruint,
+                            biometric_title = biometric_title, 
+                            flow_title = flow_title,
+                            Feature.Name = Feature.Name,
+                            pct_chg = pct_chg,
+                            startdate = startdate,
+                            enddate = enddate)
+          elf_pct_chg (pct_inputs)
+          
+          filename <- paste(admincode,"barplot.png", sep="_")
+          ggsave(file=filename, path = save_directory, width=8, height=5)
+        } else {
+          print (paste("Y-Intercept is negative, not generating barplot"));        
+        }  
       } else {
         print (paste("Slope is negative, not generating barplot"));        
-      }  
+      } 
       
     } else {
       print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));

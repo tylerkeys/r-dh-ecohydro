@@ -40,13 +40,13 @@ inputs <- list(
     'erom_q0001e_nov',
     'erom_q0001e_dec'
   ),		
-  #x_metric = 'erom_q0001e_mar', #Flow metric to be plotted on the x-axis
+  #x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
   dis_y_metric = c(
                'aqbio_nt_cent',
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_nt_cypr_native',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_benthic_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -66,7 +66,8 @@ inputs <- list(
   enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
   send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
-  sampres = 'species',                  
+  #sampres = 'species',                  
+  sampres = 'maj_fam_gen_spec',                  
                                   #--Sample Resolution Grouping Options 
                                    #   species...............Species taxanomic level (Fish metrics only)
                                    #   maj_fam_gen_spec......majority a mix of family/genus/species (Benthics only)
@@ -74,11 +75,11 @@ inputs <- list(
                                    #   maj_fam...............majority family (Benthics only)
                                    #   maj_species..............majority species (Benthics only)
   
-  quantreg = "YES",  #Plot using quantile regression method (YES or NO)
-  ymax = "YES",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  quantreg = "NO",  #Plot using quantile regression method (YES or NO)
+  ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  twopoint = "YES",    #Plot using basic two-point ELF method (YES or NO)
-  glo = 100,  # Breakpoint flow (cfs) lower boundary value for PWIT method
+  twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
+  glo = 1,  # Breakpoint flow (cfs) lower boundary value for PWIT method
   ghi = 500 # breakpoint flow (cfs) upper boundary value for PWIT method
 ) 
 

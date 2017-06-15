@@ -31,6 +31,8 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   glo <- inputs$glo
   ghi <- inputs$ghi
   
+  full_dataset <- data
+  
   #Statement to convert PWIT breakpoint boundaries for plotting against drainage area [convert cfs (whcih is roughly equal to mi^2) to km^2]
   if(x_metric == "nhdp_drainage_sqkm") {
     glo <- glo * 2.58999
@@ -40,9 +42,6 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   #must round these boundary values so they fit in admincode 
   glo <- round(glo,digits=0)
   ghi <- round(ghi,digits=0)
-  
-  data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
-  full_dataset <- data
   
   #Creates subset of data consisting of only the upper x% of the datapoints
   ##The piecewise function then looks for a breakpoint between the user specified bounding values using only these upper points 
@@ -85,8 +84,9 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   stat_quantreg_bkpt <-  breakpt
 
   
-  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point
-  if(nrow(data) > 3) {  
+  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
+  duplicates <- unique(data$attribute_value, incomparables = FALSE)
+  if(nrow(data) && length(duplicates) > 3) {   
 
     up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
     newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
@@ -260,24 +260,27 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
       print (paste("ELF Slope: ",ruslope,sep="")); 
       print (paste("ELF Y-Intercept: ",ruint,sep="")); 
       if (ruslope >= 0){
-        
-        #slope barplot  
-        pct_inputs<- list(ruslope = ruslope, 
-                          ruint = ruint,
-                          biometric_title = biometric_title, 
-                          flow_title = flow_title,
-                          Feature.Name = Feature.Name,
-                          pct_chg = pct_chg,
-                          sampres = sampres,
-                          startdate = startdate,
-                          enddate = enddate)
-        elf_pct_chg (pct_inputs)
-        
-        filename <- paste(admincode,"barplot.png", sep="_")
-        ggsave(file=filename, path = save_directory, width=8, height=5)
+        if (ruint >= 0){
+          
+          #slope barplot  
+          pct_inputs<- list(ruslope = ruslope, 
+                            ruint = ruint,
+                            biometric_title = biometric_title, 
+                            flow_title = flow_title,
+                            Feature.Name = Feature.Name,
+                            pct_chg = pct_chg,
+                            startdate = startdate,
+                            enddate = enddate)
+          elf_pct_chg (pct_inputs)
+          
+          filename <- paste(admincode,"barplot.png", sep="_")
+          ggsave(file=filename, path = save_directory, width=8, height=5)
+        } else {
+          print (paste("Y-Intercept is negative, not generating barplot"));        
+        }  
       } else {
         print (paste("Slope is negative, not generating barplot"));        
-      }  
+      } 
       
     } else {
       print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));
