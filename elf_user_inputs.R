@@ -46,7 +46,7 @@ inputs <- list(
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_benthic_nt_ept',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -66,8 +66,8 @@ inputs <- list(
   enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
   send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
-  #sampres = 'species',                  
-  sampres = 'maj_fam_gen_spec',                  
+  sampres = 'species',                  
+  #sampres = 'maj_fam_gen_spec',                  
                                   #--Sample Resolution Grouping Options 
                                    #   species...............Species taxanomic level (Fish metrics only)
                                    #   maj_fam_gen_spec......majority a mix of family/genus/species (Benthics only)
