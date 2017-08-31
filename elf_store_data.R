@@ -1,13 +1,12 @@
 library(httr)
 
-elf_store_data <- function(qd = list(), token = '') {
+elf_store_data <- function(qd = list(), token = '', inputs = list()) {
 
   if (token == '') {
     x <- list(adminid = FALSE, proplist = list());
     return(x);
   }
 
-print("pulling in site base url")
   site <- qd$site 
   
   #****************************************************************
@@ -19,7 +18,7 @@ print("pulling in site base url")
   #   Ex: 8.3.3_71h+quantreg+erom_q0001e_aug+aqbio_nt_total+0.8
   #** Create if does not exist
   #****************************************************************
-
+  print(paste("Checking submittal by admincode", qd$admincode, sep=' '))
   sq <- GET(paste(site,"/dh_adminreg_feature.json",sep=""), 
     add_headers(HTTP_X_CSRF_TOKEN = token),
     query = list(
@@ -69,8 +68,8 @@ print("pulling in site base url")
         admincode = qd$admincode
       ), 
       encode = "json"    );
-print(sq);
     sw <- content(sq);
+    print(sw)
   }
   submittal <- sw$list[[1]];
   adminid = submittal$adminid[[1]]
@@ -93,7 +92,8 @@ print(sq);
     'sampres',
     'stat_quantreg_bkpt',
     'stat_quantreg_pwit_lower',
-    'stat_quantreg_pwit_upper'
+    'stat_quantreg_pwit_upper',
+    'dataset_tag'
   );
   proplist <- list(
     stat_quantreg_m = FALSE,
@@ -109,7 +109,8 @@ print(sq);
     sampres = FALSE,
     stat_quantreg_bkpt = FALSE,
     stat_quantreg_pwit_lower = FALSE,
-    stat_quantreg_pwit_upper = FALSE
+    stat_quantreg_pwit_upper = FALSE,
+    dataset_tag = FALSE
   );
 
 #print (propdef_url);
@@ -174,18 +175,41 @@ print(sq);
       pbody$propcode = pf$propvalue;
       pbody$propvalue = NULL;
     }
+    # @todo: pass the "inputs" list from the analysis through to this storage routine
+    # this will allow us to more easily customize what we store
+    # this is super ugly.  We should name each dataset explicitly since we are 
+    # doing data range storage, but this gets us there for now without having to modify
+    # each function and later we can explicitly submit
+    # a dataset tag through elf_user_inputs
+    if ( (varkey == 'dataset_tag') ) {
+      if (is.null(inputs$dataset_tag)) {
+        #inputs;
+        print ("Can't find dataset_tag in inputs - guessing ");
+        if (qd$startdate == '1600-01-01') {
+          pbody$propcode = 'full';
+        } else {
+          pbody$propcode = paste( format(as.Date(qd$startdate),'%Y'), format(as.Date(qd$enddate),'%Y'), sep='-');
+        }
+      } else {
+        #inputs;
+        #print ("Using submitted dataset_tag in inputs");
+        pbody$propcode = inputs$dataset_tag;
+      }
+      pbody$propvalue = NULL;
+    }
     if (length(spc$list)) {
       # retrieve submittal
       spe <- spc$list[[1]];
       print ("Property exists - PUT");
       pid <- spe$pid[[1]];
-print(paste("pid: ", pid, "propcode", pbody$propcode));
+      print(paste("pid: ", pid, "propcode", pbody$propcode, "propvalue", pbody$propvalue));
       #** PUT - Update
       sub <- PUT(paste(site,"/dh_properties/",pid,sep=''), 
         add_headers(HTTP_X_CSRF_TOKEN = token),
         body = pbody, 
         encode = "json"
       );
+      #print(paste("PUT result: ", content(sub)));
     } else {
       print ("Property does not exist - POST");
       #** POST - Insert

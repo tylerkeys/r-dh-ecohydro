@@ -30,10 +30,14 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   sampres <- inputs$sampres
   glo <- inputs$glo
   ghi <- inputs$ghi
+  dataset_tag <- inputs$dataset_tag
   
   full_dataset <- data
   
   #Statement to convert PWIT breakpoint boundaries for plotting against drainage area [convert cfs (whcih is roughly equal to mi^2) to km^2]
+  # store glo and ghi before converting for use in admincode/properties
+  u_input_lo = glo;
+  u_input_hi = ghi;
   if(x_metric == "nhdp_drainage_sqkm") {
     glo <- glo * 2.58999
     ghi <- ghi * 2.58999
@@ -82,7 +86,12 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   subset_n <- length(data$metric_value)
   
   stat_quantreg_bkpt <-  breakpt
-
+  if(x_metric == "nhdp_drainage_sqkm") {
+    # convert the breakpoint found to sqmi from sqkm
+    stat_quantreg_bkpt <-  breakpt / 2.58999;
+  } else {
+    stat_quantreg_bkpt <-  breakpt;
+  }
   
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
   duplicates <- unique(data$attribute_value, incomparables = FALSE)
@@ -159,7 +168,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
         smprs <- 5
       }
       
-      admincode <- paste(Hydroid,"pwit",x_metric_varid,y_metric_varid,quantile,statagg,smprs,startdate,enddate,glo,ghi,sep='_');
+      admincode <- paste(Hydroid,"pwit",x_metric_varid,y_metric_varid,quantile,statagg,smprs,startdate,enddate,dataset_tag,sep='_');
       
       # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {
@@ -194,7 +203,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
         );
         print("Storing quantile regression.");
         qd;
-        elf_store_data (qd, token)
+        elf_store_data (qd, token, inputs)
       }
       
       #Display only 3 significant digits on plots

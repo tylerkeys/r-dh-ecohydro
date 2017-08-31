@@ -28,6 +28,7 @@ elf_retrieve_data <- function(inputs = list()){
   ymax <- inputs$ymax   
   pw_it <- inputs$pw_it  
   twopoint <- inputs$twopoint
+  token <- inputs$token
 
 for (l in offset_ws_ftype:length(ws_ftype)) {
      
@@ -154,14 +155,8 @@ for (k in offset_y_metric:length(y_metric)) {
       source(paste(fxn_locations,"elf_twopoint.R", sep = ""));       #loads elf_twopoint function
       source(paste(fxn_locations,"elf_pct_chg.R", sep =""));         #loads percent change barplot function
       source(paste(fxn_locations,"elf_store_data.R", sep = ""));     #loads function used to store ELF stats to VAHydro
-      source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
-     
-      #retrieve rest token
-      elf_rest_token (site, token)
-      token <- elf_rest_token(site, token)
-      #print(token)
       
-      if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint at 500 sqkm...",sep="")) 
+      if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep="")) 
                             elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}
       if(ymax == "YES") {print(paste("PLOTTING - method quantreg breakpoint at y-max...",sep="")) 
                             elf_ymax (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}

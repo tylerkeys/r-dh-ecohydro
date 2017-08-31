@@ -14,6 +14,12 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 fxn_locations <- "/var/www/R/r-dh-ecohydro/"
 save_directory <- "/var/www/html/files/fe/plots"
 
+#retrieve rest token
+source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
+elf_rest_token (site, token)
+token <- elf_rest_token(site, token)
+#print(token)
+
 #------------------------------------------------------------------------------------------------
 #User inputs 
 inputs <- list(
@@ -26,27 +32,27 @@ inputs <- list(
   save_directory = save_directory, 
   x_metric = c(
     'nhdp_drainage_sqkm',
-    'erom_q0001e_mean',
-    'erom_q0001e_jan',
-    'erom_q0001e_feb',
-    'erom_q0001e_mar', 
-    'erom_q0001e_apr', 
-    'erom_q0001e_may',
-    'erom_q0001e_june',
-    'erom_q0001e_july',
-    'erom_q0001e_aug',
-    'erom_q0001e_sept',
-    'erom_q0001e_oct',
-    'erom_q0001e_nov',
-    'erom_q0001e_dec'
+    'erom_q0001e_mean'
+#    'erom_q0001e_jan',
+#    'erom_q0001e_feb',
+#    'erom_q0001e_mar', 
+#    'erom_q0001e_apr', 
+#    'erom_q0001e_may',
+#    'erom_q0001e_june',
+#    'erom_q0001e_july',
+#    'erom_q0001e_aug',
+#    'erom_q0001e_sept',
+#    'erom_q0001e_oct',
+#    'erom_q0001e_nov',
+#    'erom_q0001e_dec'
   ),		
   #x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
   dis_y_metric = c(
-               'aqbio_nt_cent',
+               'nhdp_drainage_sqkm',
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_nt_benins',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -76,11 +82,14 @@ inputs <- list(
                                    #   maj_species..............majority species (Benthics only)
   
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
-  ymax = "YES",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  twopoint = "YES",    #Plot using basic two-point ELF method (YES or NO)
-  glo = 1,  # Breakpoint flow (cfs) lower boundary value for PWIT method
-  ghi = 500 # breakpoint flow (cfs) upper boundary value for PWIT method
+  twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
+  glo = 1,  # Breakpoint flow (sqmi) lower boundary value for PWIT method
+  ghi = 530, # breakpoint flow (sqmi) upper boundary value for PWIT method
+             # current values, q25 = 72, q50 = 205, q75 = 530
+  dataset_tag = 'ymax75', # unique indicator of a grouped dataset
+  token = token
 ) 
 
 #------------------------------------------------------------------------------------------------

@@ -39,32 +39,37 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
   ymax <- max(y) #finds the max y-value
   x.ymax <- subset(data, data$metric_value == ymax)
   breakpt <- min(x.ymax$attribute_value)
+  if(x_metric == "nhdp_drainage_sqkm") {
+    # convert the breakpoint found to sqmi from sqkm
+    print(paste("Converting: ", breakpt, "sqkm = ", breakpt / 2.58999, "sqmi"))
+    stat_quantreg_bkpt <-  breakpt / 2.58999;
+  } else {
+    stat_quantreg_bkpt <-  breakpt;
+  }
   
-    data<-data[!(data$attribute_value > breakpt),]
-    subset_n <- length(data$metric_value)
-
-    stat_quantreg_bkpt <-  breakpt
+  data<-data[!(data$attribute_value > breakpt),]
+  subset_n <- length(data$metric_value)
 
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
-    duplicates <- unique(data$attribute_value, incomparables = FALSE)
-    if(nrow(data) && length(duplicates) > 3) {  
+  duplicates <- unique(data$attribute_value, incomparables = FALSE)
+  if(nrow(data) && length(duplicates) > 3) {  
 
-    up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
-    newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
-    upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
+  up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
+  newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
+  upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
     
-    print(paste("Upper quantile has ", nrow(upper.quant), "values"));
-    #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
-    if (nrow(upper.quant) > 3) {
+  print(paste("Upper quantile has ", nrow(upper.quant), "values"));
+  #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
+  if (nrow(upper.quant) > 3) {
       
-      regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
-      ru <- summary(regupper)                                                  #regression for upper quantile
-      #print(ru)
-      #print(ru$coefficients)
+    regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
+    ru <- summary(regupper)                                                  #regression for upper quantile
+    #print(ru)
+    #print(ru$coefficients)
       
-      #If statement needed in case slope is "NA"
-      if (nrow(ru$coefficients) > 1) {
-        
+    #If statement needed in case slope is "NA"
+    if (nrow(ru$coefficients) > 1) {
+       
       ruint <- round(ru$coefficients[1,1], digits = 6)                         #intercept 
       ruslope <- round(ru$coefficients[2,1], digits = 6)                       #slope of regression
       rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile

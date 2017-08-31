@@ -28,13 +28,15 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
+  ghi <- inputs$ghi
+  dataset_tag <- inputs$dataset_tag
 
   full_dataset <- data
   
-  data<-data[!(data$drainage_area > 500),]
+  data<-data[!(data$drainage_area > (ghi * 2.58999)),]
   subset_n <- length(data$metric_value)
-
-  stat_quantreg_bkpt <- 500
+  # do not convert ghi here since we want to store breakpoint as sqmi not sqkm
+  stat_quantreg_bkpt <- ghi
 
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
   duplicates <- unique(data$attribute_value, incomparables = FALSE)
@@ -114,7 +116,9 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
               smprs <- 5
             }
 
-admincode <- paste(Hydroid,"fe_quantreg",x_metric_varid,y_metric_varid,quantile,statagg,smprs,startdate,enddate, sep='_');
+admincode <- paste(Hydroid,"fe_quantreg",
+                   x_metric_varid,y_metric_varid,quantile,
+                   statagg,smprs,startdate,enddate,dataset_tag, sep='_');
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
@@ -147,7 +151,7 @@ admincode <- paste(Hydroid,"fe_quantreg",x_metric_varid,y_metric_varid,quantile,
             );
 print("Storing quantile regression.");
             qd;
-            elf_store_data (qd, token)
+            elf_store_data (qd, token, inputs)
             }
 
             #Display only 3 significant digits on plots
@@ -158,7 +162,11 @@ print("Storing quantile regression.");
             plot_rup <- signif(rup, digits = 3)
 
             #Plot titles
-            plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (breakpoint at DA = 500 sqkm)",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+            plot_title <- paste(Feature.Name," (",sampres," grouping)\n",
+                            startdate," to ",
+                            enddate,"\n\nQuantile Regression: (breakpoint at DA = ", ghi, 
+                            'sqmi, (ghi  * 2.58999)',' sqkm)',
+                            sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
             xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,sep="");
             yaxis_title <- paste(biometric_title);
             EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
