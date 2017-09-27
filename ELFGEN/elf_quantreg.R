@@ -231,6 +231,7 @@ print (paste("Plotting ELF"));
                             Feature.Name = Feature.Name,
                             pct_chg = pct_chg,
                             startdate = startdate,
+                            sampres =  sampres,
                             enddate = enddate)
           elf_pct_chg (pct_inputs)
           
