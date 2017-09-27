@@ -233,6 +233,7 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
                             flow_title = flow_title,
                             Feature.Name = Feature.Name,
                             pct_chg = pct_chg,
+                            sampres = sampres,
                             startdate = startdate,
                             enddate = enddate)
           elf_pct_chg (pct_inputs)
