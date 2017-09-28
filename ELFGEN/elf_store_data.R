@@ -1,6 +1,6 @@
 library(httr)
 
-elf_store_data <- function(qd = list(), token = '', inputs = list()) {
+elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
 
   if (token == '') {
     x <- list(adminid = FALSE, proplist = list());
@@ -29,6 +29,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
     encode = "json"
   );
   sw <- content(sq);
+
 #print(sw)
 #Convert date to UNIX timestamp
   startdate <- as.numeric(as.POSIXct(qd$startdate,origin = "1970-01-01", tz = "GMT"))
@@ -69,10 +70,12 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
       ), 
       encode = "json"    );
     sw <- content(sq);
-    print(sw)
+   # print(sw)
   }
   submittal <- sw$list[[1]];
   adminid = submittal$adminid[[1]]
+  #print(paste("adminid = ",adminid))
+  #return(adminid)
   #print(paste("Submittal: ", submittal, ''));
   #****************************************************************
   #** Loop through Properties
@@ -92,8 +95,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
     'sampres',
     'stat_quantreg_bkpt',
     'stat_quantreg_pwit_lower',
-    'stat_quantreg_pwit_upper',
-    'dataset_tag'
+    'stat_quantreg_pwit_upper'
   );
   proplist <- list(
     stat_quantreg_m = FALSE,
@@ -109,8 +111,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
     sampres = FALSE,
     stat_quantreg_bkpt = FALSE,
     stat_quantreg_pwit_lower = FALSE,
-    stat_quantreg_pwit_upper = FALSE,
-    dataset_tag = FALSE
+    stat_quantreg_pwit_upper = FALSE
   );
 
 #print (propdef_url);
@@ -175,28 +176,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
       pbody$propcode = pf$propvalue;
       pbody$propvalue = NULL;
     }
-    # @todo: pass the "inputs" list from the analysis through to this storage routine
-    # this will allow us to more easily customize what we store
-    # this is super ugly.  We should name each dataset explicitly since we are 
-    # doing data range storage, but this gets us there for now without having to modify
-    # each function and later we can explicitly submit
-    # a dataset tag through elf_user_inputs
-    if ( (varkey == 'dataset_tag') ) {
-      if (is.null(inputs$dataset_tag)) {
-        #inputs;
-        print ("Can't find dataset_tag in inputs - guessing ");
-        if (qd$startdate == '1600-01-01') {
-          pbody$propcode = 'full';
-        } else {
-          pbody$propcode = paste( format(as.Date(qd$startdate),'%Y'), format(as.Date(qd$enddate),'%Y'), sep='-');
-        }
-      } else {
-        #inputs;
-        #print ("Using submitted dataset_tag in inputs");
-        pbody$propcode = inputs$dataset_tag;
-      }
-      pbody$propvalue = NULL;
-    }
+
     if (length(spc$list)) {
       # retrieve submittal
       spe <- spc$list[[1]];
@@ -220,5 +200,5 @@ elf_store_data <- function(qd = list(), token = '', inputs = list()) {
       );
     }
   }
-  return(list(adminid = adminid, proplist = proplist));
+  adminid <- adminid
 }

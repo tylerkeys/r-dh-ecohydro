@@ -29,7 +29,6 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   site <- inputs$site
   sampres <- inputs$sampres
   ghi <- inputs$ghi
-  dataset_tag <- inputs$dataset_tag
 
   full_dataset <- data
   
@@ -116,9 +115,11 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
               smprs <- 5
             }
 
-admincode <- paste(Hydroid,"fe_quantreg",
-                   x_metric_varid,y_metric_varid,quantile,
-                   statagg,smprs,startdate,enddate,dataset_tag, sep='_');
+#admincode <- paste(Hydroid,"fe_quantreg",
+#                   x_metric_varid,y_metric_varid,quantile,
+#                   statagg,smprs,startdate,enddate, sep='_');
+
+admincode <-paste("Joey_test_1");
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
@@ -151,8 +152,11 @@ admincode <- paste(Hydroid,"fe_quantreg",
             );
 print("Storing quantile regression.");
             qd;
-            elf_store_data (qd, token, inputs)
-            }
+            elf_store_data (qd, token, inputs, adminid)
+           }
+
+          adminid <- elf_store_data(qd, token, inputs, adminid)
+          print(paste("THE ADMINID IS = ",adminid,sep=""))
 
             #Display only 3 significant digits on plots
             plot_ruslope <- signif(ruslope, digits = 3)
