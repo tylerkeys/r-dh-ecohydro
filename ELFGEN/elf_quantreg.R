@@ -7,7 +7,7 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token){
+elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
 
   x_metric <- x_metric_code
   y_metric <- y_metric_code
@@ -23,11 +23,15 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   xaxis_thresh <- inputs$xaxis_thresh
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
-  startdate <- inputs$startdate
-  enddate <- inputs$enddate
+  #startdate <- inputs$startdate
+  #enddate <- inputs$enddate
+  
+  analysis_timespan <- inputs$analysis_timespan
+  
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
+  glo <- inputs$glo #this isnt really needed for the basic quantreg method
   ghi <- inputs$ghi
 
   full_dataset <- data
@@ -89,41 +93,17 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             biometric_row <- which(metric_table$varkey == y_metric)
             biomeric_name <- metric_table[biometric_row,]
             biometric_title <- biomeric_name$varname                #needed for human-readable plot titles
-            y_metric_varid <- biomeric_name$varid                   #needed for admincode
-            
+
             flow_row <- which(metric_table$varkey == x_metric)
             flow_name <- metric_table[flow_row,]
             flow_title <- flow_name$varname                         #needed for human-readable plot titles
-            x_metric_varid <- flow_name$varid                       #needed for admincode
-
-            #Ensuring uniqueness in submittal admincodes (coding beacuse of limited admincode characters)
-            if (station_agg == 'max') {
-              statagg <- 1
-            } else {
-              statagg <- 2
-            }
-
-            if (sampres == 'species') {
-              smprs <- 1
-            } else if(sampres == 'maj_fam_gen_spec') {
-              smprs <- 2
-            } else if(sampres == 'maj_fam_gen') {
-              smprs <- 3
-            } else if(sampres == 'maj_fam') {
-              smprs <- 4
-            } else if (sampres == 'maj_spec') {
-              smprs <- 5
-            }
-
-#admincode <- paste(Hydroid,"fe_quantreg",
-#                   x_metric_varid,y_metric_varid,quantile,
-#                   statagg,smprs,startdate,enddate, sep='_');
 
 admincode <-paste("Joey_test_1");
 
+
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
-   
+
             qd <- list(
               featureid = Hydroid,
               admincode = admincode,
@@ -146,17 +126,22 @@ admincode <-paste("Joey_test_1");
                 stat_quantreg_y = y_metric,
                 station_agg =station_agg,
                 sampres = sampres,
-                stat_quantreg_bkpt = stat_quantreg_bkpt
-                
+                stat_quantreg_bkpt = stat_quantreg_bkpt,
+                stat_quantreg_glo = glo,
+                stat_quantreg_ghi = ghi,
+                analysis_timespan = analysis_timespan
               )
             );
 print("Storing quantile regression.");
-            qd;
+            #qd;
             elf_store_data (qd, token, inputs, adminid)
+            adminid <- elf_store_data(qd, token, inputs, adminid)
+           } else {
+            adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
            }
 
-          adminid <- elf_store_data(qd, token, inputs, adminid)
-          print(paste("THE ADMINID IS = ",adminid,sep=""))
+         # adminid <- elf_store_data(qd, token, inputs, adminid)
+          #print(paste("adminid: ",adminid,sep=""))
 
             #Display only 3 significant digits on plots
             plot_ruslope <- signif(ruslope, digits = 3)
@@ -217,7 +202,7 @@ print (paste("Plotting ELF"));
               ); 
             
             # END plotting function
-              filename <- paste(admincode,"elf.png", sep="_")
+              filename <- paste(adminid,"elf.png", sep="_")
               ggsave(file=filename, path = save_directory, width=8, height=6)
 
               
@@ -239,7 +224,7 @@ print (paste("Plotting ELF"));
                             enddate = enddate)
           elf_pct_chg (pct_inputs)
           
-          filename <- paste(admincode,"barplot.png", sep="_")
+          filename <- paste(adminid,"pctchg.png", sep="_")
           ggsave(file=filename, path = save_directory, width=8, height=5)
         } else {
           print (paste("Y-Intercept is negative, not generating barplot"));        

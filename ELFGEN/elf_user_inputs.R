@@ -3,16 +3,16 @@ rm(list = ls())  #clear variables
 options(timeout=120); # set timeout to twice default level to avoid abort due to high traffic
  
 #----------------------------------------------
-site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d.bet OR d.dh
+site <- "http://deq1.bse.vt.edu/d.bet"    #Specify the site of interest, either d.bet OR d.dh
 #----------------------------------------------
 
 #----FOR RUNNING LOCALLY:
-##fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\"          #Specify location of supporting function .R files
-##save_directory <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\plots"  #Specify location for storing plot images locally
+fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\elf_updates_9.27.17\\"          #Specify location of supporting function .R files
+save_directory <- "C:\\Users\\nrf46657\\Desktop\\elf_updates_9.27.17\\plots"  #Specify location for storing plot images locally
 
 #----FOR RUNNING FROM SERVER:
-fxn_locations <- "/var/www/R/r-dh-ecohydro/"
-save_directory <- "/var/www/html/files/fe/plots"
+#fxn_locations <- "/var/www/R/r-dh-ecohydro/"
+#save_directory <- "/var/www/html/files/fe/plots"
 
 #retrieve rest token
 source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
@@ -31,8 +31,8 @@ inputs <- list(
   pct_chg = 10,                             #Percent decrease in flow for barplots (keep at 10 for now)
   save_directory = save_directory, 
   x_metric = c(
-    'nhdp_drainage_sqkm',
-    'erom_q0001e_mean'
+    'nhdp_drainage_sqkm'#,
+#    'erom_q0001e_mean'
 #    'erom_q0001e_jan',
 #    'erom_q0001e_feb',
 #    'erom_q0001e_mar', 
@@ -52,7 +52,7 @@ inputs <- list(
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_nt_benins',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -64,12 +64,15 @@ inputs <- list(
     'ecoregion_iv',
     'ecoiii_huc6'
   ),
-  ws_ftype = c('nhd_huc8'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
-  target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
+  ws_ftype = c('hwi_region'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
+  target_hydrocode = 'ohio_river_basin_nhdplus',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
-  startdate = '1600-01-01',        #Leave at 1600-01-01 when batch processing to encompass all sample dates (different date-ranges can be used for later analyses)
-  enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
+ # startdate = '1600-01-01',        #Leave at 1600-01-01 when batch processing to encompass all sample dates (different date-ranges can be used for later analyses)
+ # enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
+
+  analysis_timespan = '1990-2000', #need to encompass "all"...
+
   send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
   sampres = 'species',                  
@@ -83,12 +86,12 @@ inputs <- list(
   
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
   ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
-  pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
+  pw_it = "NO",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
-  glo = 1,  # Breakpoint flow (sqmi) lower boundary value for PWIT method
+  glo = 1,  # Breakpoint flow (sqmi) lower boundary value for PWIT method #guess low and guess high
   ghi = 530, # breakpoint flow (sqmi) upper boundary value for PWIT method
              # current values, q25 = 72, q50 = 205, q75 = 530
-  dataset_tag = 'ymax75', # unique indicator of a grouped dataset
+#  dataset_tag = 'yx75', # unique indicator of a grouped dataset
   token = token
 ) 
 

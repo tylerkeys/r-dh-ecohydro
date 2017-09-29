@@ -8,7 +8,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
   }
 
   site <- qd$site 
-  
+ 
   #****************************************************************
   #** Create/Load Submittal Record to attach stats to
   #** search for AdminReg submittal attached to a certain feature
@@ -18,15 +18,20 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
   #   Ex: 8.3.3_71h+quantreg+erom_q0001e_aug+aqbio_nt_total+0.8
   #** Create if does not exist
   #****************************************************************
+  
+  
+  print(qd$analysis_timespan)
+  
+  #USE A VIEW INSTEAD TO RETURN THE SUBMITTAL IF IT EXISTS!
   print(paste("Checking submittal by admincode", qd$admincode, sep=' '))
   sq <- GET(paste(site,"/dh_adminreg_feature.json",sep=""), 
-    add_headers(HTTP_X_CSRF_TOKEN = token),
-    query = list(
-      bundle = 'submittal',
-      dh_link_feature_submittal = qd$featureid,
-      admincode = qd$admincode
-    ), 
-    encode = "json"
+            add_headers(HTTP_X_CSRF_TOKEN = token),
+            query = list(
+              bundle = 'submittal',
+              dh_link_feature_submittal = qd$featureid,
+              admincode = qd$admincode
+            ), 
+            encode = "json"
   );
   sw <- content(sq);
 
@@ -94,8 +99,9 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
     'station_agg',
     'sampres',
     'stat_quantreg_bkpt',
-    'stat_quantreg_pwit_lower',
-    'stat_quantreg_pwit_upper'
+    'stat_quantreg_glo',
+    'stat_quantreg_ghi',
+    'analysis_timespan'
   );
   proplist <- list(
     stat_quantreg_m = FALSE,
@@ -110,8 +116,9 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
     station_agg =FALSE,
     sampres = FALSE,
     stat_quantreg_bkpt = FALSE,
-    stat_quantreg_pwit_lower = FALSE,
-    stat_quantreg_pwit_upper = FALSE
+    stat_quantreg_glo = FALSE,
+    stat_quantreg_ghi = FALSE,
+    analysis_timespan = FALSE
   );
 
 #print (propdef_url);
@@ -172,7 +179,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
       propvalue = pf$propvalue,
       propcode = NULL
     );
-    if ( (varkey == 'stat_quantreg_x') || (varkey == 'stat_quantreg_y')|| (varkey == 'sampres')|| (varkey == 'station_agg') ) {
+    if ( (varkey == 'stat_quantreg_x') || (varkey == 'stat_quantreg_y')|| (varkey == 'sampres')|| (varkey == 'station_agg')|| (varkey == 'analysis_timespan') ) {
       pbody$propcode = pf$propvalue;
       pbody$propvalue = NULL;
     }

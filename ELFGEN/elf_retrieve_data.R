@@ -21,13 +21,18 @@ elf_retrieve_data <- function(inputs = list()){
   site <- inputs$site
   xaxis_thresh <- inputs$xaxis_thresh
   sampres <- inputs$sampres
-  startdate <- inputs$startdate
-  enddate <- inputs$enddate
+ # startdate <- inputs$startdate
+ # enddate <- inputs$enddate
+  
+  analysis_timespan <- inputs$analysis_timespan
+  
   station_agg <- inputs$station_agg
   quantreg <- inputs$quantreg 
   ymax <- inputs$ymax   
   pw_it <- inputs$pw_it  
   twopoint <- inputs$twopoint
+ # glo <- inputs$glo 
+ # ghi <- inputs$ghi
   token <- inputs$token
 
 for (l in offset_ws_ftype:length(ws_ftype)) {
@@ -97,8 +102,18 @@ for (k in offset_y_metric:length(y_metric)) {
       data$metric_value <- as.numeric(data$metric_value)
       #Subset by date range 
       data$tstime <- as.Date(data$tstime,origin="1970-01-01")
-      data <- subset(data, tstime > startdate & tstime < enddate)
       
+      #Need to convert timespan paramteter into startdate and endate format for subsetting data 
+     # analysis_timespan <- '1990-2000'
+    #  print(analysis_timespan)
+      startdate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[1]],"-01-01",sep="")
+      enddate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[2]],"-12-31",sep="")
+      
+      print(paste("startdate: ", startdate))
+      print(paste("enddate: ", enddate))
+      
+      data <- subset(data, tstime > startdate & tstime < enddate)
+
       #ADD COLUMN OF RATIO OF DRAINAGE AREA TO MEAN FLOW 
       data["ratio"] <- (data$drainage_area)/(data$qmean_annual)
       #REMOVE ALL STATIONS WHERE THE RATIO OF DA:Q IS GREATER THAN 1000
@@ -157,13 +172,13 @@ for (k in offset_y_metric:length(y_metric)) {
       source(paste(fxn_locations,"elf_store_data.R", sep = ""));     #loads function used to store ELF stats to VAHydro
       
       if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep="")) 
-                            elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}
+                            elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       if(ymax == "YES") {print(paste("PLOTTING - method quantreg breakpoint at y-max...",sep="")) 
-                            elf_ymax (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}
+                            elf_ymax (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       if(pw_it == "YES") {print(paste("PLOTTING - method quantreg breakpoint using piecewise function...",sep="")) 
-                            elf_pw_it (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}
+                            elf_pw_it (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       if(twopoint == "YES") {print(paste("PLOTTING - method two-point function...",sep=""))
-                            elf_twopoint (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token)}
+                            elf_twopoint (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       
 
         } #closes watershed for loop  
