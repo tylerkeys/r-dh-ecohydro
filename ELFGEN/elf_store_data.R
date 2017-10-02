@@ -12,38 +12,59 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
   #****************************************************************
   #** Create/Load Submittal Record to attach stats to
   #** search for AdminReg submittal attached to a certain feature
-  # - dh_link_feature_submittal = 
-  # - ftype = fe_quantreg
-  # - admincode = hydrocode+analysis-name+x+y+analysis-parm1+analysis-parm2
-  #   Ex: 8.3.3_71h+quantreg+erom_q0001e_aug+aqbio_nt_total+0.8
+  #** Search on uniqueness (determined by input parameters)
   #** Create if does not exist
   #****************************************************************
   
+  print(paste("Checking submittal by input parameters", sep=''))
+  elf_submittal_exists <- paste(site,"elf_submittal_exists", 
+                                  qd$ftype,
+                                  "active",
+                                  qd$admincode,
+                                  qd$stats$analysis_timespan,
+                                  qd$stats$stat_quantreg_x,
+                                  qd$stats$stat_quantreg_y,
+                                  qd$stats$sampres,
+                                  qd$stats$stat_quantreg_qu,
+                                  qd$stats$station_agg,
+                                  qd$featureid,
+                                sep = "/");
   
-  print(qd$analysis_timespan)
+  elf_submittal_exists <- read.table(elf_submittal_exists,header = TRUE, sep = ",")
+  #print(elf_submittal_exists)
+  
+  adminid <- elf_submittal_exists$s_adminid
+  #if (length(adminid) == 0) {print("creating")}
+  
+  
+  
+  #---------------------------------------------------------------
+ # print(qd$analysis_timespan)
   
   #USE A VIEW INSTEAD TO RETURN THE SUBMITTAL IF IT EXISTS!
-  print(paste("Checking submittal by admincode", qd$admincode, sep=' '))
-  sq <- GET(paste(site,"/dh_adminreg_feature.json",sep=""), 
-            add_headers(HTTP_X_CSRF_TOKEN = token),
-            query = list(
-              bundle = 'submittal',
-              dh_link_feature_submittal = qd$featureid,
-              admincode = qd$admincode
-            ), 
-            encode = "json"
-  );
-  sw <- content(sq);
+  # print(paste("Checking submittal by admincode", qd$admincode, sep=' '))
+  # sq <- GET(paste(site,"/dh_adminreg_feature.json",sep=""), 
+  #           add_headers(HTTP_X_CSRF_TOKEN = token),
+  #           query = list(
+  #             bundle = 'submittal',
+  #             dh_link_feature_submittal = qd$featureid,
+  #             admincode = qd$admincode
+  #           ), 
+  #           encode = "json"
+  # );
+  # sw <- content(sq);
 
 #print(sw)
 #Convert date to UNIX timestamp
-  startdate <- as.numeric(as.POSIXct(qd$startdate,origin = "1970-01-01", tz = "GMT"))
-  enddate <- as.numeric(as.POSIXct(qd$enddate,origin = "1970-01-01", tz = "GMT"))
+ # startdate <- as.numeric(as.POSIXct(qd$startdate,origin = "1970-01-01", tz = "GMT"))
+ # enddate <- as.numeric(as.POSIXct(qd$enddate,origin = "1970-01-01", tz = "GMT"))
 
   #** Create if does not exist
-  if (length(sw$list)) {
+  #if (length(sw$list)) {
+  if (length(adminid)) {
     # retrieve submittal
     print ("Submittal exists");
+    print(paste("Submittal adminid = ",adminid,sep=""))
   } else {
     # create submittal
     print ("Creating Submittal");
@@ -56,29 +77,35 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
         admincode = qd$admincode,
         ftype = qd$ftype,
         fstatus = 'active',
-        startdate = startdate,
-        enddate = enddate,
+        #startdate = startdate,
+        #enddate = enddate,
         dh_link_feature_submittal = list(
           list( 
             'id' = qd$featureid
           )
         )
       ), 
-      encode = "json"    )
-    sq <- GET(
-      paste(site,"/dh_adminreg_feature.json",sep=""), 
-      add_headers(HTTP_X_CSRF_TOKEN = token),
-      query = list(
-        bundle = 'submittal',
-        dh_link_feature_submittal = qd$featureid,
-        admincode = qd$admincode
-      ), 
-      encode = "json"    );
-    sw <- content(sq);
+      encode = "json")
+    
+    sq <- content(sq)
+    adminid <- sq$id
+    
+    # sq <- GET(
+    #   paste(site,"/dh_adminreg_feature.json",sep=""), 
+    #   add_headers(HTTP_X_CSRF_TOKEN = token),
+    #   query = list(
+    #     bundle = 'submittal',
+    #     dh_link_feature_submittal = qd$featureid,
+    #     admincode = qd$admincode
+    #   ), 
+    #   encode = "json"    );
+
+    print(paste("New Submittal adminid = ",adminid,sep=""))
+ #   sw <- content(sq);
    # print(sw)
   }
-  submittal <- sw$list[[1]];
-  adminid = submittal$adminid[[1]]
+#  submittal <- sw$list[[1]];
+#  adminid = submittal$adminid[[1]]
   #print(paste("adminid = ",adminid))
   #return(adminid)
   #print(paste("Submittal: ", submittal, ''));
