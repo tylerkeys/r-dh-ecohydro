@@ -1,0 +1,92 @@
+---
+title: "ELF Monthly Comparisons"
+output: word_document
+---
+
+```{r, echo=FALSE}
+# install.packages('gdata')
+library('gdata')
+bundle <- 'watershed';
+ftype <- 'nhd_huc8';
+metric <- 'aqbio_nt_cent';
+selected <- 'all'; # all or hydrocode
+quantile <- 0.8;
+qftype <- 'fe_quantreg_pwit'; # fe_quantreg, fe_quantreg_pwit, fe_quantreg_ymax, fe_twopoint
+pmax  <- 0.05;
+dataset_tag = 'full_ymax_q75'; # full, full_ymax_q75, ymax50, 1990-2010, 1970-1980, ...
+uri <- paste("http://deq1.bse.vt.edu/d.dh/fe-export-regparms", bundle, ftype, selected, metric, 
+             quantile, pmax, qftype, 'all', dataset_tag, sep='/');
+data = read.csv(uri, header = TRUE, sep = "\t");
+data.da <- subset(data, x == 'nhdp_drainage_sqkm');
+data.mean <- subset(data, x == 'erom_q0001e_mean');
+data.jan <- subset(data, x == 'erom_q0001e_jan');
+data.feb <- subset(data, x == 'erom_q0001e_feb');
+data.mar <- subset(data, x == 'erom_q0001e_mar');
+data.apr <- subset(data, x == 'erom_q0001e_apr');
+data.may <- subset(data, x == 'erom_q0001e_may');
+data.jun <- subset(data, x == 'erom_q0001e_june');
+data.jul <- subset(data, x == 'erom_q0001e_july');
+data.aug <- subset(data, x == 'erom_q0001e_aug');
+data.sep <- subset(data, x == 'erom_q0001e_sept');
+data.oct <- subset(data, x == 'erom_q0001e_oct');
+data.nov <- subset(data, x == 'erom_q0001e_nov');
+data.dec <- subset(data, x == 'erom_q0001e_dec');
+n = c('DA', 'Mean', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+title <- paste("R^2 of upper ", 100.*(1.0 - quantile), "% for \n", metric, " = f(DA), f(Qmean), f(Qjan),..., f(Qdec) for ", ftype);
+if (length(data.da$adminid) > 1) {
+  boxplot(
+    data.da$Rsq, data.mean$Rsq, data.jan$Rsq, data.feb$Rsq, data.mar$Rsq, 
+      data.apr$Rsq, data.may$Rsq, data.jun$Rsq, data.jul$Rsq, data.aug$Rsq, 
+      data.sep$Rsq, data.oct$Rsq, data.nov$Rsq, data.dec$Rsq,
+    names = n, 
+    main = title
+  );
+} else {
+  # we are running a single watershed, so use a bar chart
+  nms = strsplit(as.vector(data$x), '_', fixed = TRUE);
+  xs = matrix(unlist(nms),ncol=3,byrow=TRUE)
+  labs = xs[,3]
+  par(las=1) # make label text perpendicular to axis
+  barplot(data$adj_Rsq, names.arg=labs, main=paste("R# for region", selected), 
+          xlab="DA/Flow Variable")
+  
+}
+```
+* Location: `r selected`
+* quantile: `r quantile`
+* Metric: `r metric`
+* Geospatial Unit: `r ftype`
+* Analysis Type: `r qftype`
+* Dataset Tag: `r dataset_tag`
+```{r, echo=FALSE,fig.width=3, fig.show='hold'}
+cs = c( 'sqkm', 'mean', 'jan', 'feb', 'mar', 'apr', 'may', 'june', 'july', 'aug', 'sept', 'oct', 'nov', 'dec');
+# coloring bar plots: https://stackoverflow.com/questions/16121903/r-barplot-y-axis-scale-too-short
+  for (i in 1:nrow(data.da)) {
+  hc = data.da$hydrocode[i]
+  data.hc = subset(data, hydrocode == hc)
+  data.sorted = c(
+    subset(data.hc, x == 'nhdp_drainage_sqkm')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_mean')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_jan')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_feb')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_mar')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_apr')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_may')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_jun')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_jul')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_aug')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_sep')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_oct')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_nov')$adj_Rsq,
+    subset(data.hc, x == 'erom_q0001e_dec')$adj_Rsq
+  )
+  
+  nms = strsplit(as.vector(data.hc$x), '_', fixed = TRUE);
+  xs = matrix(unlist(nms),ncol=3,byrow=TRUE)
+  labs = xs[,3]
+  labs = subset(labs[match(cs,labs)], labs[match(cs,labs)] != 'NA')
+  par(las=2) # make label text perpendicular to axis
+  barplot(data.hc$adj_Rsq, names.arg=labs, main=paste("R# ", hc), 
+          xlab="DA/Flow Variable", ylim=c(0,1.0))
+}
+```
