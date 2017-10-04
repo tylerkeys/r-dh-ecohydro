@@ -23,3 +23,15 @@ fn_iha_7q10 <- function(zoots) {
   x7q10 <- exp(qpearsonIII(0.1, params = pars$par))
   return(x7q10);
 }
+
+fn_iha_mlf <- function(zoots, targetmo) {
+  modat <- group1(zoots,'water','min')  # IHA function that calculates minimum monthly statistics for our data by water year	 
+  print(paste("Grabbing ", targetmo, " values ", sep=''))
+  g1vec <- as.vector(as.matrix(modat[,targetmo]))  # gives only August statistics
+  
+  # calculates the 50th percentile - this is the August Low Flow
+  # August Low Flow = median flow of the annual minimum flows in August for a chosen time period
+  print("Performing quantile analysis")
+  x <- quantile(g1vec, 0.5);
+  return(as.numeric(x));
+}
