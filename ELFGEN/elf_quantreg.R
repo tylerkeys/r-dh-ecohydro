@@ -128,8 +128,6 @@ admincode <-paste("Joey_test_5",sep="");
               )
             );
 print("Storing quantile regression.");
-            #qd;
-            elf_store_data (qd, token, inputs, adminid)
             adminid <- elf_store_data(qd, token, inputs, adminid)
            } else {
             adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
