@@ -16,7 +16,6 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
   #** Create submittal if does not exist
   #****************************************************************
   
-  print(paste("Checking submittal by input parameters", sep=''))
   elf_submittal_exists <- paste(site,"elf_submittal_exists", 
                                   qd$ftype,
                                   "active",
@@ -27,9 +26,12 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
                                   qd$stats$sampres,
                                   qd$stats$stat_quantreg_qu,
                                   qd$stats$station_agg,
+                                  qd$stats$stat_quantreg_glo,
+                                  qd$stats$stat_quantreg_ghi,
                                   qd$featureid,
                                 sep = "/");
   
+  print(paste("Checking submittal by input parameters using: ",elf_submittal_exists, sep=''))
   elf_submittal_exists <- read.table(elf_submittal_exists,header = TRUE, sep = ",")
   adminid <- elf_submittal_exists$s_adminid
 

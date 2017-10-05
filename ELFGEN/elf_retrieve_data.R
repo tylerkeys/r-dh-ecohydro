@@ -104,13 +104,10 @@ for (k in offset_y_metric:length(y_metric)) {
       data$tstime <- as.Date(data$tstime,origin="1970-01-01")
       
       #Need to convert timespan paramteter into startdate and endate format for subsetting data 
-     # analysis_timespan <- '1990-2000'
-    #  print(analysis_timespan)
       startdate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[1]],"-01-01",sep="")
       enddate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[2]],"-12-31",sep="")
-      
-      print(paste("startdate: ", startdate))
-      print(paste("enddate: ", enddate))
+        print(paste("startdate: ", startdate))
+        print(paste("enddate: ", enddate))
       
       data <- subset(data, tstime > startdate & tstime < enddate)
 

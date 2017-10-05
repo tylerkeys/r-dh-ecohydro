@@ -1,5 +1,4 @@
 rm(list = ls())  #clear variables
-#library(httr);   #Load httr package
 options(timeout=120); # set timeout to twice default level to avoid abort due to high traffic
  
 #----------------------------------------------

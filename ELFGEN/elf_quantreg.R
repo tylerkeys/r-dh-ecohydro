@@ -23,15 +23,12 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   xaxis_thresh <- inputs$xaxis_thresh
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
-  #startdate <- inputs$startdate
-  #enddate <- inputs$enddate
-  
   analysis_timespan <- inputs$analysis_timespan
   
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
-  glo <- inputs$glo #this isnt really needed for the basic quantreg method
+  #glo <- inputs$glo #this isnt really needed for the basic quantreg method
   ghi <- inputs$ghi
 
   full_dataset <- data
@@ -98,8 +95,8 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             flow_name <- metric_table[flow_row,]
             flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-admincode <-paste("Joey_test_1");
-
+#admincode <-paste(Hydroid,"_fe_quantreg",sep="");
+admincode <-paste("Joey_test_4",sep="");
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
@@ -109,8 +106,6 @@ admincode <-paste("Joey_test_1");
               admincode = admincode,
               name = paste( "Quantile Regression, ", y_metric, ' = f( ', x_metric, ' ), upper ',quantile * 100, '%', sep=''),
               ftype = 'fe_quantreg',
-              startdate = startdate,
-              enddate = enddate,
               site = site,
               x = x_metric,
               y = y_metric,
@@ -127,7 +122,7 @@ admincode <-paste("Joey_test_1");
                 station_agg =station_agg,
                 sampres = sampres,
                 stat_quantreg_bkpt = stat_quantreg_bkpt,
-                stat_quantreg_glo = glo,
+                stat_quantreg_glo = 0,
                 stat_quantreg_ghi = ghi,
                 analysis_timespan = analysis_timespan
               )
