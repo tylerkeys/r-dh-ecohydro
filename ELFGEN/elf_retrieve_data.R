@@ -110,7 +110,8 @@ for (k in offset_y_metric:length(y_metric)) {
         print(paste("startdate: ", startdate))
         print(paste("enddate: ", enddate))
       data <- subset(data, tstime > startdate & tstime < enddate)
-      } else {
+        startdate <- paste("subset: ",startdate,sep="")
+      } else {        
         startdate <- paste("full timespan: ",min(data$tstime),sep="") #if plotting for full timespan, display start and end dates on plot
         enddate <- max(data$tstime)   #no dates set with REST, only "full" for analysis_timespan propcode
       }

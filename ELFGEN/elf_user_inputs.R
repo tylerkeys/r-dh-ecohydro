@@ -70,8 +70,8 @@ inputs <- list(
  # startdate = '1600-01-01',        #Leave at 1600-01-01 when batch processing to encompass all sample dates (different date-ranges can be used for later analyses)
  # enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
 
-  #analysis_timespan = '1990-2000', #need to encompass "all"...
-  analysis_timespan = 'full', #need to encompass "all"...
+  analysis_timespan = '1990-2000', #used to subset data on date range 
+  #analysis_timespan = 'full', #used to plot for entire timespan 
 
   send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
