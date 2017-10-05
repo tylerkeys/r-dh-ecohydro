@@ -96,7 +96,7 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
 #admincode <-paste(Hydroid,"_fe_quantreg",sep="");
-admincode <-paste("Joey_test_4",sep="");
+admincode <-paste("Joey_test_5",sep="");
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {

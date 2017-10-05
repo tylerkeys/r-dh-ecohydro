@@ -103,14 +103,19 @@ for (k in offset_y_metric:length(y_metric)) {
       #Subset by date range 
       data$tstime <- as.Date(data$tstime,origin="1970-01-01")
       
+      if (analysis_timespan != 'full') {
       #Need to convert timespan paramteter into startdate and endate format for subsetting data 
       startdate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[1]],"-01-01",sep="")
       enddate <- paste(unlist(strsplit(analysis_timespan, "[-]"))[[2]],"-12-31",sep="")
         print(paste("startdate: ", startdate))
         print(paste("enddate: ", enddate))
-      
       data <- subset(data, tstime > startdate & tstime < enddate)
-
+      } else {
+        startdate <- paste("full timespan: ",min(data$tstime),sep="") #if plotting for full timespan, display start and end dates on plot
+        enddate <- max(data$tstime)   #no dates set with REST, only "full" for analysis_timespan propcode
+      }
+      
+      
       #ADD COLUMN OF RATIO OF DRAINAGE AREA TO MEAN FLOW 
       data["ratio"] <- (data$drainage_area)/(data$qmean_annual)
       #REMOVE ALL STATIONS WHERE THE RATIO OF DA:Q IS GREATER THAN 1000
