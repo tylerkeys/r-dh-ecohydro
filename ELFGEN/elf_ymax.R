@@ -7,15 +7,14 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token){
+elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
  
+  #Load inputs
   x_metric <- x_metric_code
   y_metric <- y_metric_code
   Feature.Name <- Feature.Name_code
   Hydroid <- Hydroid_code
   ws_ftype <- ws_ftype_code
-  
-  #Load inputs
   pct_chg <- inputs$pct_chg 
   save_directory <- inputs$save_directory 
   target_hydrocode <- inputs$target_hydrocode
@@ -23,16 +22,14 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
   xaxis_thresh <- inputs$xaxis_thresh
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
-  startdate <- inputs$startdate
-  enddate <- inputs$enddate
+  analysis_timespan <- inputs$analysis_timespan
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
   
   full_dataset <- data
   
- # print(data)
-  
+
   x <- data$attribute_value
   y <- data$metric_value
   
@@ -99,33 +96,12 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       biometric_row <- which(metric_table$varkey == y_metric)
       biomeric_name <- metric_table[biometric_row,]
       biometric_title <- biomeric_name$varname                #needed for human-readable plot titles
-      y_metric_varid <- biomeric_name$varid                   #needed for admincode
-      
+
       flow_row <- which(metric_table$varkey == x_metric)
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
-      x_metric_varid <- flow_name$varid                       #needed for admincode
-      
-      #Ensuring uniqueness in submittal admincodes (coding beacuse of limited admincode characters)
-      if (station_agg == 'max') {
-        statagg <- 1
-      } else {
-        statagg <- 2
-      }
-      
-      if (sampres == 'species') {
-        smprs <- 1
-      } else if(sampres == 'maj_fam_gen_spec') {
-        smprs <- 2
-      } else if(sampres == 'maj_fam_gen') {
-        smprs <- 3
-      } else if(sampres == 'maj_fam') {
-        smprs <- 4
-      } else if (sampres == 'maj_spec') {
-        smprs <- 5
-      }
-      
-      admincode <- paste(Hydroid,"quantreg_ymax",x_metric_varid,y_metric_varid,quantile,statagg,smprs,startdate,enddate, sep='_');
+
+      admincode <-paste(Hydroid,"_fe_quantreg_ymax",sep="");
       
       if (send_to_rest == 'YES') {
         # stash the regression
@@ -134,8 +110,8 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
           admincode = admincode,
           name = paste( "Quantile Regression (Y-Max), ", y_metric, ' = f( ', x_metric, ' ), upper ',quantile * 100, '%', sep=''),
           ftype = 'fe_quantreg_ymax',
-          startdate = startdate,
-          enddate = enddate,
+          #startdate = startdate,
+          #enddate = enddate,
           site = site,
           x = x_metric,
           y = y_metric,
@@ -151,14 +127,19 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
             stat_quantreg_y = y_metric,
             station_agg =station_agg,
             sampres = sampres,
-            stat_quantreg_bkpt = stat_quantreg_bkpt
+            stat_quantreg_bkpt = stat_quantreg_bkpt,
+            stat_quantreg_glo = 0, #Need to store 0 value in order to query using this property
+            stat_quantreg_ghi = 0, #Need to store 0 value in order to query using this property
+            analysis_timespan = analysis_timespan
             
           )
         );
         print("Storing quantile regression.");
-        qd;
-        elf_store_data (qd, token)
+        adminid <- elf_store_data(qd, token, inputs, adminid)
+      } else {
+        adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
       }
+      
       
       #Display only 3 significant digits on plots
       plot_ruslope <- signif(ruslope, digits = 3)
@@ -216,7 +197,7 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
         ); 
       
       # END plotting function
-      filename <- paste(admincode,"elf.png", sep="_")
+      filename <- paste(adminid,"elf.png", sep="_")
       ggsave(file=filename, path = save_directory, width=8, height=6)
       
       
@@ -238,7 +219,7 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
                             enddate = enddate)
           elf_pct_chg (pct_inputs)
           
-          filename <- paste(admincode,"barplot.png", sep="_")
+          filename <- paste(adminid,"pctchg.png", sep="_")
           ggsave(file=filename, path = save_directory, width=8, height=5)
         } else {
           print (paste("Y-Intercept is negative, not generating barplot"));        
