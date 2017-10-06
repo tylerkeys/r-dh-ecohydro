@@ -8,9 +8,9 @@ library(data.table);
 library(scales);
 
 elf_retrieve_data <- function(inputs = list()){
-
+  
+  #Load inputs
   x_metric <- inputs$x_metric 
-  #print(x_metric)
   y_metric <- inputs$y_metric 
   ws_ftype <- inputs$ws_ftype
   target_hydrocode <- inputs$target_hydrocode
@@ -21,18 +21,12 @@ elf_retrieve_data <- function(inputs = list()){
   site <- inputs$site
   xaxis_thresh <- inputs$xaxis_thresh
   sampres <- inputs$sampres
- # startdate <- inputs$startdate
- # enddate <- inputs$enddate
-  
   analysis_timespan <- inputs$analysis_timespan
-  
   station_agg <- inputs$station_agg
   quantreg <- inputs$quantreg 
   ymax <- inputs$ymax   
   pw_it <- inputs$pw_it  
   twopoint <- inputs$twopoint
- # glo <- inputs$glo 
- # ghi <- inputs$ghi
   token <- inputs$token
 
 for (l in offset_ws_ftype:length(ws_ftype)) {
@@ -112,7 +106,7 @@ for (k in offset_y_metric:length(y_metric)) {
       data <- subset(data, tstime > startdate & tstime < enddate)
         startdate <- paste("subset: ",startdate,sep="")
       } else {        
-        startdate <- paste("full timespan: ",min(data$tstime),sep="") #if plotting for full timespan, display start and end dates on plot
+        startdate <- paste("full timespan: ",min(data$tstime),sep="") #if plotting for full timespan, display start and end dates above plot
         enddate <- max(data$tstime)   #no dates set with REST, only "full" for analysis_timespan propcode
       }
       
@@ -121,11 +115,7 @@ for (k in offset_y_metric:length(y_metric)) {
       data["ratio"] <- (data$drainage_area)/(data$qmean_annual)
       #REMOVE ALL STATIONS WHERE THE RATIO OF DA:Q IS GREATER THAN 1000
       data<-data[!(data$ratio > 1000),]
-      
-      #write.csv(data, file = "data.csv", row.names = TRUE)
-      #POTENTIAL EROM CLEAN-UP METHOD, REMOVE ALL POINTS WITH DA ABOVE 500
-      #data <- subset(data,  drainage_area < 500);
-      
+
       #USE ONLY MAX NT VALUE FOR EACH STATION
       if(station_agg == "max"){ 
         aa <- data[order(data$hydrocode, data$metric_value, decreasing=TRUE),]
