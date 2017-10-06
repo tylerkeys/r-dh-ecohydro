@@ -7,15 +7,14 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token){
-  
+elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
+ 
+  #Load inputs 
   x_metric <- x_metric_code
   y_metric <- y_metric_code
   Feature.Name <- Feature.Name_code
   Hydroid <- Hydroid_code
   ws_ftype <- ws_ftype_code
-  
-  #Load inputs
   pct_chg <- inputs$pct_chg 
   save_directory <- inputs$save_directory 
   target_hydrocode <- inputs$target_hydrocode
@@ -23,8 +22,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   xaxis_thresh <- inputs$xaxis_thresh
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
-  startdate <- inputs$startdate
-  enddate <- inputs$enddate
+  analysis_timespan <- inputs$analysis_timespan
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
@@ -67,33 +65,16 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       biometric_row <- which(metric_table$varkey == y_metric)
       biomeric_name <- metric_table[biometric_row,]
       biometric_title <- biomeric_name$varname                #needed for human-readable plot titles
-      y_metric_varid <- biomeric_name$varid                   #needed for admincode
-      
+
       flow_row <- which(metric_table$varkey == x_metric)
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
-      x_metric_varid <- flow_name$varid                       #needed for admincode
+
+      #admincode <- paste(Hydroid,"twopoint",x_metric_varid,y_metric_varid,"-9999",statagg,smprs,startdate,enddate, sep='_');
+      admincode <-paste(Hydroid,"_fe_twopoint",sep="");
       
-      #Ensuring uniqueness in submittal admincodes (coding beacuse of limited admincode characters)
-      if (station_agg == 'max') {
-        statagg <- 1
-      } else {
-        statagg <- 2
-      }
-      
-      if (sampres == 'species') {
-        smprs <- 1
-      } else if(sampres == 'maj_fam_gen_spec') {
-        smprs <- 2
-      } else if(sampres == 'maj_fam_gen') {
-        smprs <- 3
-      } else if(sampres == 'maj_fam') {
-        smprs <- 4
-      } else if (sampres == 'maj_spec') {
-        smprs <- 5
-      }
-      
-      admincode <- paste(Hydroid,"twopoint",x_metric_varid,y_metric_varid,"-9999",statagg,smprs,startdate,enddate, sep='_');
+      #Store breakpoint in sqmi if plotting for drainage area 
+      if (x_metric == 'nhdp_drainage_sqkm') {xmin.ymax <- (xmin.ymax / 2.58999)}
       
       # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {
@@ -103,8 +84,6 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
           admincode = admincode,
           name = paste( "Two-Point, ", y_metric, ' = f( ', x_metric, ' )', sep=''),
           ftype = 'fe_twopoint',
-          startdate = startdate,
-          enddate = enddate,
           site = site,
           x = x_metric,
           y = y_metric,
@@ -118,15 +97,18 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
             stat_quantreg_qu = "-9999",
             stat_quantreg_x = x_metric,
             stat_quantreg_y = y_metric,
-            station_agg =station_agg,
+            station_agg = station_agg,
             sampres = sampres,
-            stat_quantreg_bkpt = xmin.ymax
-            
+            stat_quantreg_bkpt = xmin.ymax,
+            stat_quantreg_glo = 0, #Need to store 0 value in order to query using this property
+            stat_quantreg_ghi = 0, #Need to store 0 value in order to query using this property
+            analysis_timespan = analysis_timespan
           )
         );
         print("Storing quantile regression.");
-        qd;
-        elf_store_data (qd, token)
+        adminid <- elf_store_data(qd, token, inputs, adminid)
+      } else {
+        adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
       }
       
       #Display only 3 significant digits on plots
@@ -164,7 +146,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
         ); 
       
       # END plotting function
-      filename <- paste(admincode,"elf.png", sep="_")
+      filename <- paste(adminid,"elf.png", sep="_")
       ggsave(file=filename, path = save_directory, width=8, height=6)
       
       
@@ -186,7 +168,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
                             enddate = enddate)
           elf_pct_chg (pct_inputs)
           
-          filename <- paste(admincode,"barplot.png", sep="_")
+          filename <- paste(adminid,"pctchg.png", sep="_")
           ggsave(file=filename, path = save_directory, width=8, height=5)
         } else {
           print (paste("Y-Intercept is negative, not generating barplot"));        
