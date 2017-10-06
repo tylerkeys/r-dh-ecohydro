@@ -9,13 +9,12 @@ library(scales);
 
 elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
 
+  #Load inputs
   x_metric <- x_metric_code
   y_metric <- y_metric_code
   Feature.Name <- Feature.Name_code
   Hydroid <- Hydroid_code
   ws_ftype <- ws_ftype_code
-  
-  #Load inputs
   pct_chg <- inputs$pct_chg 
   save_directory <- inputs$save_directory 
   target_hydrocode <- inputs$target_hydrocode
@@ -24,15 +23,14 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
   analysis_timespan <- inputs$analysis_timespan
-  
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
-  #glo <- inputs$glo #this isnt really needed for the basic quantreg method
   ghi <- inputs$ghi
 
   full_dataset <- data
   
+  #Convert ghi input from sqmi to sqkm, and remove datapoints greater than the ghi DA threashold
   data<-data[!(data$drainage_area > (ghi * 2.58999)),]
   subset_n <- length(data$metric_value)
   # do not convert ghi here since we want to store breakpoint as sqmi not sqkm
@@ -41,8 +39,6 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
   duplicates <- unique(data$attribute_value, incomparables = FALSE)
   if(nrow(data) && length(duplicates) > 3) {  
-          
-
     
           up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
           newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
@@ -95,8 +91,8 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             flow_name <- metric_table[flow_row,]
             flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-#admincode <-paste(Hydroid,"_fe_quantreg",sep="");
-admincode <-paste("Joey_test_5",sep="");
+admincode <-paste(Hydroid,"_fe_quantreg",sep="");
+#admincode <-paste("Joey_test_5",sep="");
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
@@ -132,9 +128,6 @@ print("Storing quantile regression.");
            } else {
             adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
            }
-
-         # adminid <- elf_store_data(qd, token, inputs, adminid)
-          #print(paste("adminid: ",adminid,sep=""))
 
             #Display only 3 significant digits on plots
             plot_ruslope <- signif(ruslope, digits = 3)
