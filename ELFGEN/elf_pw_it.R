@@ -145,7 +145,6 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-      #admincode <- paste(Hydroid,"pwit",x_metric_varid,y_metric_varid,quantile,statagg,smprs,startdate,enddate,dataset_tag,sep='_');
       admincode <-paste(Hydroid,"_fe_quantreg_pwit",sep="");
       
       # stash the regression statistics using REST  
@@ -180,7 +179,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
         print("Storing quantile regression.");
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
-        adminid <- target_hydrocode #Plot images are stored using watershed hydrocode when NOT performing REST 
+        adminid <- paste(target_hydrocode,"_fe_quantreg_pwit",sep="") #Plot images are stored using watershed hydrocode when NOT performing REST 
       }
       
       #Display only 3 significant digits on plots

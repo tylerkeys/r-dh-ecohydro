@@ -30,8 +30,8 @@ inputs <- list(
   pct_chg = 10,                             #Percent decrease in flow for barplots (keep at 10 for now)
   save_directory = save_directory, 
   x_metric = c(
-    'nhdp_drainage_sqkm'#,
-#    'erom_q0001e_mean'
+#    'nhdp_drainage_sqkm'#,
+    'erom_q0001e_mean'
 #    'erom_q0001e_jan',
 #    'erom_q0001e_feb',
 #    'erom_q0001e_mar', 
@@ -64,16 +64,16 @@ inputs <- list(
     'ecoiii_huc6'
   ),
   ws_ftype = c('hwi_region'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
-  target_hydrocode = 'ohio_river_basin_nhdplus',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
+  target_hydrocode = 'atl_non_coastal_plain_usgs',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
  # startdate = '1600-01-01',        #Leave at 1600-01-01 when batch processing to encompass all sample dates (different date-ranges can be used for later analyses)
  # enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
 
-  analysis_timespan = '1990-2000', #used to subset data on date range 
-  #analysis_timespan = 'full', #used to plot for entire timespan 
+  #analysis_timespan = '1990-2000', #used to subset data on date range 
+  analysis_timespan = 'full', #used to plot for entire timespan 
 
-  send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
+  send_to_rest = "YES",            #"YES" to push ELF statistic outputs to VAHydro
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
   sampres = 'species',                  
   #sampres = 'maj_fam_gen_spec',                  
@@ -82,16 +82,17 @@ inputs <- list(
                                    #   maj_fam_gen_spec......majority a mix of family/genus/species (Benthics only)
                                    #   maj_fam_gen...........majority a mix of family/genus (Benthics only)
                                    #   maj_fam...............majority family (Benthics only)
-                                   #   maj_species..............majority species (Benthics only)
+                                   #   maj_species...........majority species (Benthics only)
   
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
-  ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
-  pw_it = "NO",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
-  glo = 1,  # Breakpoint flow (sqmi) lower boundary value for PWIT method #guess low and guess high
-  ghi = 530, # breakpoint flow (sqmi) upper boundary value for PWIT method
-             # current values, q25 = 72, q50 = 205, q75 = 530
-#  dataset_tag = 'yx75', # unique indicator of a grouped dataset
+  pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
+  ymax = "YES",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  twopoint = "YES",    #Plot using basic two-point ELF method (YES or NO)
+  glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
+  ghi = 530, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
+             # ghi values determined from ymax analyses,  q25 = 72 
+             #                                            q50 = 205 
+             #                                            q75 = 530
   token = token
 ) 
 
