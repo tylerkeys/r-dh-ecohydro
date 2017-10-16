@@ -10,7 +10,7 @@ fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\r-d
 save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\stash_plots"                     #Specify location for storing plot images locally
 
 #----FOR RUNNING FROM SERVER:
-#fxn_locations <- "/var/www/R/r-dh-ecohydro/"
+#fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/"
 #save_directory <- "/var/www/html/files/fe/plots"
 
 #retrieve rest token
