@@ -1,3 +1,3 @@
-This folder houses the R scripts needed for generating ELFs and storing the outputs to drupal VAHydro
+This folder houses the R scripts needed for generating ELFs from a sample data file .csv
 
-***New folder coming to house ELF scripts for external use 
+elf_retrieve_data.R to be replaced by csv
