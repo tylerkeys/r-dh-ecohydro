@@ -1,12 +1,7 @@
 library(httr);
 
 
-getProperty <- function(varkey, featureid, entity_type, function_location, base_url, prop){
-  
-  #retrieve REST token
-  source(paste(function_location,"rest_token.R", sep = ""))
-  rest_token (base_url, token)
-  token <- rest_token(base_url, token)
+getProperty <- function(varkey, featureid, entity_type, token, base_url, prop){
   
   #Convert varkey to varid - needed for REST operations 
   propdef_url<- paste(base_url,"/?q=vardefs.tsv/",varkey,sep="")
