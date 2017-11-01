@@ -3,7 +3,7 @@
 base_url <- "http://deq1.bse.vt.edu/d.dh/"
 
 #Set location of "getProperty.R" function
-path <- "/Users/nrf46657/Desktop/POST/"
+path <- "/Users/nrf46657/Desktop/VAHydro Development/GitHub/r-dh-ecohydro/Analysis/fn_vahydro-2.0/"
 source(paste(path,"rest_functions.R", sep = ""))
 
 #User input required to retrieve REST token
