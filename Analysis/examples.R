@@ -10,6 +10,9 @@ source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
 
 library(dataRetrieval)
+
+# ***************************************************
+# *******   USGS Gage Analysis ****
 #vignette("dataRetrieval",package = "dataRetrieval")
 # 3. Import data, select site, code, start/end dates
 # example for the Dan River at Paces, VA

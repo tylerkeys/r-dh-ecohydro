@@ -17,13 +17,13 @@ fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid 
   # Authentication
   hash <- "4291a2a64734da6e0c223a77f4ac5b9f"
   username <- "robertwb"
-  
+
   # Set up query for batch of model objects
   # Internal variable to construct the query
   urlbase<-"http://deq1.bse.vt.edu/om/remote/get_modelData.php?elementid="
   print(paste("Getting data for run ", runid, " for element ", elementid))      # creates the whole url by pasting the element and run ids into it
   filename<-paste(urlbase, elementid, "&variables=", varname, "&runid=", runid, "&startdate=1984-10-01&enddate=2005-09-30", sep = "")
-  print(paste("From ", filename))
+  print(paste("From ", filename));
   
   dat = try(read.table(filename, header = TRUE, sep = ",")) 
   if (class(dat)=='try-error') { 
@@ -39,6 +39,46 @@ fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid 
   }
   return(f3);
   
+}
+
+fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
+  if (elementid == -1 ) {
+    return(FALSE);
+  }
+  if (runid == -1 ) {
+    return(FALSE);
+  }
+  # may be obsolete
+  #setInternet2(TRUE)
+  # Authentication
+  hash <- "4291a2a64734da6e0c223a77f4ac5b9f"
+  username <- "robertwb"
+
+  # just get the run file
+  urlbase<-"http://deq1.bse.vt.edu/om/remote/get_modelData.php?operation=11&elementid="
+  print(paste("Getting output file for run ", runid, " for element ", elementid))      # creates the whole url by pasting the element and run ids into it
+  filename<-paste(urlbase, elementid, "&runid=", runid, "&startdate=1984-10-01&enddate=2005-09-30", sep = "")
+  print(paste("From ", filename))
+  finfo = try(read.csv(filename, header = TRUE, sep = ",")) ;
+  if (class(finfo)=='try-error') { 
+    # what to do if file empty 
+    print(paste("Error: empty file ", filename))
+    return (FALSE);
+  }
+  filename = as.character(finfo$remote_url);
+  dat = try(read.table( filename, header = TRUE, sep = ",")) ;
+  if (class(dat)=='try-error') { 
+    # what to do if file empty 
+    print(paste("Error: empty file ", filename))
+    return (FALSE);
+  } else { 
+    #dat<-read.table(filename, header = TRUE, sep = ",")   #  reads the csv-formatted data from the url	
+    print(paste("Data obtained, found ", length(dat[,1]), " lines - formatting for IHA analysis"))
+    datv<-as.vector(dat)  # stores the data as a vector     
+    datv$timestamp <- as.POSIXct(datv$timestamp,origin="1970-01-01")
+    f3 <- zoo(datv, order.by = datv$thisdate)
+  }
+  return(f3);
 }
 
 fn_storeprop_vahydro1 = function(){

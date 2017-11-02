@@ -13,7 +13,7 @@ selected <- 'all'; # all or hydrocode
 quantile <- 0.8;
 qftype <- 'fe_quantreg_pwit'; # fe_quantreg, fe_quantreg_pwit, fe_quantreg_ymax, fe_twopoint
 pmax  <- 0.05;
-dataset_tag = 'full_ymax_q75'; # full, full_ymax_q75, ymax50, 1990-2010, 1970-1980, ...
+dataset_tag = 'full'; # full, full_ymax_q75, ymax50, 1990-2010, 1970-1980, ...
 uri <- paste("http://deq1.bse.vt.edu/d.dh/fe-export-regparms", bundle, ftype, selected, metric, 
              quantile, pmax, qftype, 'all', dataset_tag, sep='/');
 data = read.csv(uri, header = TRUE, sep = "\t");
