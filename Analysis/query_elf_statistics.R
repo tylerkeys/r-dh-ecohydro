@@ -4,14 +4,14 @@
 # ftype.......................fe_quantreg, fe_quantreg_pwit, fe_quantreg_ymax, fe_twopoint
 # fstatus.....................active (always set to active for now)
 # analysis_timespan...........1990-2000, full (to return all data)
-# stat_quantreg_y.............aqbio_nt_total, aqbio_nt_total_benthic...
+# yvar.............aqbio_nt_total, aqbio_nt_total_benthic...
 # sampres.....................species, maj_fam_gen_spec, maj_fam, maj_species
 # stat_quantreg_qu............0.80, 0.90...
 # station_agg.................max, all
 # stat_quantreg_glo...........0, 1, 100...
 # stat_quantreg_ghi...........530, 1000...
 # feature_ftype...................hwi_region, state, nhd_huc6, nhd_huc8, ecoregion_iii, ecoregion_iv, ecoiii_huc6...
-# stat_quantreg_x.............nhdp_drainage_sqkm, erom_q0001e_mean, OR Leave empty to return stats for all x-metrics
+# xvar.............nhdp_drainage_sqkm, erom_q0001e_mean, OR Leave empty to return stats for all x-metrics
 
 # Query Inputs -----------------------------------------------------
 fn_dh_elfstats <- function(
@@ -19,16 +19,16 @@ fn_dh_elfstats <- function(
     ftype = "fe_quantreg_pwit",
     fstatus = "active",
     analysis_timespan = "full",
-    stat_quantreg_y = "aqbio_nt_total",
+    yvar = "aqbio_nt_total",
     sampres = "species",
     stat_quantreg_qu = 0.80,
     station_agg = "max",
     stat_quantreg_glo = 1,
     stat_quantreg_ghi = 530,
     feature_ftype = "nhd_huc8",
-    stat_quantreg_x = "") {
+    xvar = "") {
 #------------------------------------------------------------------
-    elf_statistics <- paste(site,"export_elf_statistics",ftype,fstatus,analysis_timespan,stat_quantreg_y,sampres,stat_quantreg_qu,station_agg,stat_quantreg_glo,stat_quantreg_ghi,feature_ftype,stat_quantreg_x,sep = "/");
+    elf_statistics <- paste(site,"export_elf_statistics",ftype,fstatus,analysis_timespan,yvar,sampres,stat_quantreg_qu,station_agg,stat_quantreg_glo,stat_quantreg_ghi,feature_ftype,xvar,sep = "/");
     elf_statistics <- read.table(elf_statistics,header = TRUE, sep = ",");
     return (elf_statistics);
 }
