@@ -29,6 +29,7 @@ fn_dh_elfstats <- function(
     xvar = "") {
 #------------------------------------------------------------------
     elf_statistics <- paste(site,"export_elf_statistics",ftype,fstatus,analysis_timespan,yvar,sampres,stat_quantreg_qu,station_agg,stat_quantreg_glo,stat_quantreg_ghi,feature_ftype,xvar,sep = "/");
+    print(paste("Using URI: ", elf_statistics));
     elf_statistics <- read.table(elf_statistics,header = TRUE, sep = ",");
     return (elf_statistics);
 }

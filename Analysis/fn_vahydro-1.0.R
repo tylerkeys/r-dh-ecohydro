@@ -3,6 +3,7 @@
 library('zoo')
 library('IHA')
 library(PearsonDS)
+options(timeout=240); # set timeout to twice default level to avoid abort due to high traffic
 
 
 fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid = 37) {
@@ -66,6 +67,7 @@ fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
     return (FALSE);
   }
   filename = as.character(finfo$remote_url);
+  print(paste("Downloading Run File ", filename));
   dat = try(read.table( filename, header = TRUE, sep = ",")) ;
   if (class(dat)=='try-error') { 
     # what to do if file empty 
@@ -76,7 +78,8 @@ fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
     print(paste("Data obtained, found ", length(dat[,1]), " lines - formatting for IHA analysis"))
     datv<-as.vector(dat)  # stores the data as a vector     
     datv$timestamp <- as.POSIXct(datv$timestamp,origin="1970-01-01")
-    f3 <- zoo(datv, order.by = datv$thisdate)
+    #f3 <- zoo(datv, order.by = datv$thisdate)
+    f3 <- zoo(datv, order.by = datv$timestamp)
   }
   return(f3);
 }
