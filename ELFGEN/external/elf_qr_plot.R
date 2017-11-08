@@ -7,10 +7,8 @@ library(httr);
 library(data.table);
 library(scales);
 
-save_directory <- "C:\\Users\\Elaina\\Documents\\HARP\\github\\plots"  
-
 #__________________________________________
-elf_qr_plot <- function(inputs=c(inputs,qr_calc_out), data, startdate, enddate){
+elf_qr_plot <- function(inputs, qr_calc_out, data, fxn_locations, startdate, enddate){
   
   #Load inputs from inputs
   x_metric <- inputs$x_metric 
@@ -35,6 +33,8 @@ elf_qr_plot <- function(inputs=c(inputs,qr_calc_out), data, startdate, enddate){
   plot_rursadj <- signif(qr_calc_out$qr_stats_out$stat_quantreg_adj_rsq, digits = 3)
   plot_rup <- signif(qr_calc_out$qr_stats_out$stat_quantreg_p, digits = 3)
 
+  save_directory <- fxn_locations
+  
   full_dataset <- data
   
   #Convert ghi input from sqmi to sqkm, and remove datapoints greater than the ghi DA threashold

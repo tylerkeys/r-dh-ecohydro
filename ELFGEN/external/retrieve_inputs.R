@@ -10,34 +10,32 @@ library(httr);
 library(data.table);
 library(scales);
 
-fxn_locations <- "C:\\Users\\Elaina\\Documents\\HARP\\github\\r-dh-ecohydro\\ELFGEN\\external\\" 
+fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\EXTERNAL\\"
+datasource <- "upperroan.csv"
+#save_directory <- "C:\\Users\\nrf46657\\Desktop\\EXTERNAL\\plots"
 
 inputs <- list(
-#Save inputs
-x_metric = 'nhdp_drainge_sqkm',
-y_metric = 'aqbio_nt_total',
-target_hydrocode = 'nhd_huc8_03010101',
+x_metric = 'Drainage Area (sqkm)',
+y_metric = 'Number of Taxa, Total Fish',
+target_hydrocode = 'Upper Roanoke River (HUC8 03010101)',
 xaxis_thresh = 15000,
-#sampres <-,
-analysis_timespan = '1990-2005', #specify years of interest
+analysis_timespan = 'full', #specify years of interest 1990-2005 or full
 station_agg = 'MAX',
 pct_chg = 10,
 quantile = 0.80,
 glo = 1,
 ghi = 530
 )
-
-#elf_retrieve_data <- function(inputs = list()){
-  
+ 
   #must set equal to "YES" to run the method
-  quantreg = "YES"
-  qr_plot = "YES"
+  quantreg = "YES" #to return quantile regression stats as csv ONLY
+  qr_plot = "YES"  #to return plots of quantile regression and percent changes (must have quantreg = "YES")
   ymax = "NO"   
   pw_it = "NO"  
   twopoint = "NO"
 
 #load data from external source
-data <- read.csv(file = "C:\\Users\\Elaina\\Documents\\HARP\\RScripts\\upperroan.csv", header = TRUE)
+data <- read.csv(file = paste(fxn_locations,datasource,sep=""), header = TRUE)
       
           #makes sure all metric values are numeric and not factorial (fixes error with ni, total)
           data$metric_value <- as.numeric(data$metric_value)
@@ -58,7 +56,6 @@ data <- read.csv(file = "C:\\Users\\Elaina\\Documents\\HARP\\RScripts\\upperroan
             enddate <- max(data$tstime)   #no dates set with REST, only "full" for analysis_timespan propcode
           }
           
-          
           #ADD COLUMN OF RATIO OF DRAINAGE AREA TO MEAN FLOW 
           data["ratio"] <- (data$drainage_area)/(data$qmean_annual)
           #REMOVE ALL STATIONS WHERE THE RATIO OF DA:Q IS GREATER THAN 1000
@@ -78,62 +75,39 @@ data <- read.csv(file = "C:\\Users\\Elaina\\Documents\\HARP\\RScripts\\upperroan
           print(paste("Found ", nrow(data), sep=''));
           #If statement needed in case geographic region does not contain more than 3 points
           if(nrow(data) <= 3) {
-            print(paste("... Skipping (fewer than 3 datapoints available)",sep=''))
-            next
-          } 
-          
+            stop("Execution halted - fewer than 3 datapoints available")
+          } else {
           
           #Skip if there is only 1 or 2 unique flow metric values for this watershed (either only a single EDAS station, or multiple with the same flow metric, which would result in a vertical bar of points in the plot)
           station_attribute_value <- data$attribute_value
           remove_da_duplicates <- unique(station_attribute_value, incomparables = FALSE)
           if(length(remove_da_duplicates) == 1 | length(remove_da_duplicates) == 2) {
-            print(paste("... Skipping (the points are all organized in 1 or 2 vertical lines in ", Watershed_Hydrocode[i],")", sep=''));
-            next 
-          } #closes bar of points skip if-statement (rare)
+            stop("Execution halted - the points are all organized in 1 or 2 vertical lines")
+          } else {
           
           #Skip if there is only 1 or 2 unique biometric values for this watershed
           station_metric_value <- data$metric_value
           remove_metric_duplicates <- unique(station_metric_value, incomparables = FALSE)
           if(length(remove_metric_duplicates) == 1 | length(remove_metric_duplicates) == 2) {
-            print(paste("... Skipping (the points are all organized in 1 or 2 horizontal lines in ", Watershed_Hydrocode[i],")", sep=''));
-            next 
-          } #closes bar of points skip if-statement (rare)
+            stop("Execution halted - the points are all organized in 1 or 2 horizontal lines")
+          } else {
+          
+          
           
           #---------------------------------------------------------------------     
           source(paste(fxn_locations,"elf_qr_calc.R", sep = ""));  #loads elf_quantreg function
-          if(quantreg == "YES") {print(paste("CALCULATING - method quantreg breakpoint ...",sep="")) 
-          qr_calc_out <-  elf_qr_calc (inputs, data, 
-                          #x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, 
-                          startdate, enddate)
-          
           source(paste(fxn_locations,"elf_qr_plot.R", sep = ""));  #loads elf_qr_plot function
           source(paste(fxn_locations,"elf_pct_chg.R", sep = ""));  #loads elf_pct_chg function
+            
+          if(quantreg == "YES") {print(paste("CALCULATING - method quantreg breakpoint ...",sep="")) 
+          qr_calc_out <-  elf_qr_calc (inputs, data, fxn_locations, startdate, enddate)
+          
           if(qr_plot == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep=""))
-            qr_plot <- elf_qr_plot (inputs=c(inputs,qr_calc_out),data,startdate,enddate)
+            qr_plot <- elf_qr_plot (inputs, qr_calc_out, data, fxn_locations, startdate, enddate)
             } #closes quantreg plotting function
             } #closes quantreg function
-        
-                 
+      
           
-          #pw_it = "NO",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-          #ymax = "NO",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
-          #twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
-        
-          
-          #Load Functions               
-          #source(paste(fxn_locations,"elf_quantreg.R", sep = ""));       #loads elf_quantreg function
-          #source(paste(fxn_locations,"elf_ymax.R", sep = ""));           #loads elf_ymax function
-          #source(paste(fxn_locations,"elf_pw_it.R", sep = ""));          #loads ef_pw_it function
-          #source(paste(fxn_locations,"elf_twopoint.R", sep = ""));       #loads elf_twopoint function
-          #source(paste(fxn_locations,"elf_pct_chg.R", sep =""));         #loads percent change barplot function
-          #source(paste(fxn_locations,"elf_store_data.R", sep = ""));     #loads function used to store ELF stats to VAHydro
-          
-          #if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep="")) 
-           # elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
-          #if(ymax == "YES") {print(paste("PLOTTING - method quantreg breakpoint at y-max...",sep="")) 
-           # elf_ymax (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
-          #if(pw_it == "YES") {print(paste("PLOTTING - method quantreg breakpoint using piecewise function...",sep="")) 
-          #  elf_pw_it (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
-          #if(twopoint == "YES") {print(paste("PLOTTING - method two-point function...",sep=""))
-           # elf_twopoint (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
-          
+              } #Execution halted - the points are all organized in 1 or 2 horizontal lines
+            } #Execution halted - the points are all organized in 1 or 2 vertical lines
+          } #Execution halted - fewer than 3 datapoints available

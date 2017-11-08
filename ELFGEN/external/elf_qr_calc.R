@@ -7,10 +7,8 @@ library(httr);
 library(data.table);
 library(scales);
 
-save_directory <- "C:\\Users\\Elaina\\Documents\\HARP\\github\\plots"  
-
 #__________________________________________
-elf_qr_calc <- function(inputs, data, startdate, enddate){
+elf_qr_calc <- function(inputs, data, fxn_locations, startdate, enddate){
   
   #Load inputs
   x_metric <- inputs$x_metric 
@@ -23,8 +21,7 @@ elf_qr_calc <- function(inputs, data, startdate, enddate){
   glo <-inputs$glo
   pct_chg <-inputs$pct_chg
   quantile <- inputs$quantile
-  
-  
+  save_directory <- fxn_locations
   full_dataset <- data
   
   
@@ -94,7 +91,7 @@ elf_qr_calc <- function(inputs, data, startdate, enddate){
         stats_tbl$variables <-names(stats)
         write.csv(stats_tbl, file=paste(save_directory,"/qr_stats_tbl.csv", sep=""));
         
-        print("Storing quantile regression.");
+        print("Storing quantile regression stats");
 
         #exports the outputs and the upper quantile subset for plotting
         qr_calc_out <- list(qr_stats_out=stats,qr_upper.quant=upper.quant)
