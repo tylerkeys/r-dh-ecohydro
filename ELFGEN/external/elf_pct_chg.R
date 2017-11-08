@@ -5,7 +5,7 @@ elf_pct_chg <- function(pct_inputs = list()){
   flow_title <- pct_inputs$flow_title
   Feature.Name <- pct_inputs$Feature.Name
   pct_chg <- pct_inputs$pct_chg
-  sampres <- pct_inputs$sampres
+  #sampres <- pct_inputs$sampres
   startdate <- pct_inputs$startdate
   enddate <- pct_inputs$enddate
  
@@ -20,10 +20,10 @@ elf_pct_chg <- function(pct_inputs = list()){
   slope_table = data.frame(xvalues,pct_chgs)
   #print(head(slope_table))
   
-title_projname <- sampres
+#title_projname <- sampres
 
 #Plot titles
-ptitle <- paste("Change in ",biometric_title," at ",pct_chg,"% Flow Reduction","\n", Feature.Name," (",startdate," to ",enddate,")\n",title_projname," grouping",sep="")
+ptitle <- paste("Change in ",biometric_title," at ",pct_chg,"% Flow Reduction","\n", Feature.Name," (",startdate," to ",enddate,")\n",sep="")
 xaxis_title <- paste("\n",flow_title,sep="");
 yaxis_title <- paste("% Decrease in ", biometric_title,"\n", sep="");
 
