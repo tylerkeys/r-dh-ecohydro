@@ -32,6 +32,6 @@ fn_iha_mlf <- function(zoots, targetmo) {
   # calculates the 50th percentile - this is the August Low Flow
   # August Low Flow = median flow of the annual minimum flows in August for a chosen time period
   print("Performing quantile analysis")
-  x <- quantile(g1vec, 0.5);
+  x <- quantile(g1vec, 0.5, na.rm = TRUE);
   return(as.numeric(x));
 }

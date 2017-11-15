@@ -67,7 +67,13 @@ fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
     return (FALSE);
   }
   filename = as.character(finfo$remote_url);
-  print(paste("Downloading Run File ", filename));
+  if (finfo$compressed == 1) {
+    print(paste("Downloading Compressed Run File ", filename));
+    download.file(filename,'tempfile',mode="wb");
+    filename <-  unzip ('tempfile');
+  } else {
+    print(paste("Downloading Un-compressed Run File ", filename));
+  }
   dat = try(read.table( filename, header = TRUE, sep = ",")) ;
   if (class(dat)=='try-error') { 
     # what to do if file empty 
