@@ -2,26 +2,36 @@
 fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));  
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
-elid = 340136;
+elid = 340118;
 runid = 997;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_Qout");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
-plot(dat$impoundment_Qout,ylim=c(0,50), main = paste("Element ", elid, " with riser diam=", 3))
+plot(dat$impoundment_Qout,ylim=c(0,600), main = paste("Element ", elid, " with riser diam=", 3))
 points(dat$impoundment_Qin)
 
 # Just show a specific design storm
-destorm <- window(dat, start = as.Date("1989-05-06"), end = as.Date("1989-05-08"));
-plot(destorm$impoundment_Qout,ylim=c(0,60), labels = TRUE, main = paste("Element ", elid, " with riser diam=", 3))
+destorm <- window(dat, start = as.POSIXct("1989-05-06 16:00"), end = as.POSIXct("1989-05-06 24:00"));
+plot(destorm$impoundment_Qout,ylim=c(0,800), main = paste("Element ", elid, " with riser diam=", 3))
 points(destorm$impoundment_Qin);
-points(destorm$impoundment_Qout, pch = 10);
-lines(destorm$impoundment_lake_elev, lty = 3);
-line(destorm$impoundment_Qin);
-dstorm = dataframe;
+points(destorm$impoundment_Storage, pch = 10);
+legend("topright", c("Qout","Qin", "S")
+);
+
+# Format for taabular output
+destorm$impoundment_Qout <- round(as.numeric(destorm$impoundment_Qout,1));
+destorm$impoundment_lake_elev <- round(as.numeric(destorm$impoundment_lake_elev),1);
+destorm$impoundment_Storage <- round(as.numeric(destorm$impoundment_Storage),1);
+destorm$deltaS <- round(((3.07 / 1.547) / 24) * (as.numeric(destorm$impoundment_Qin) - as.numeric(destorm$impoundment_Qout)),1);
 # Create a smaller labeled dataframe to allow easier comparisons of variables of interest
-destorm2 <- cbind(destorm$impoundment_Qout,destorm$impoundment_lake_elev, destorm$impoundment_riser_mode, destorm$impoundment_riser_head);
-colnames(destorm2) <- c('Qout', 'elev', 'Mode', 'Head');
+destorm2 <- cbind(destorm$impoundment_Qout, 
+                  destorm$impoundment_lake_elev, 
+                  destorm$impoundment_riser_mode, 
+                  destorm$impoundment_Storage, 
+                  destorm$deltaS
+);
+colnames(destorm2) <- c('Qout (cfs)', 'Elev (ft)', 'Mode', 'S (ac-ft)', 'dS');
 
 pander(destorm2)

@@ -13,14 +13,16 @@ library(dataRetrieval);
 
 #elid = 339865; # Frederick Co pump-store
 #elid = 209793; # Bath Co
-elid = 252285; # Sith River Martinsville
-runid = 0;
+elid = 252285; # Smith River Martinsville
+runid = 2;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_lake_elev");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
-plot(dat$Qout,ylim=c(0,10))
+plot(dat$Qout,ylim=c(0,10000))
+fdc(dat$Qout, main="Flow Duration", log='', xlab="Flow Exceedence",
+    ylab="Q cfs", verbose=FALSE);
 
 as.numeric(as.character( dat$Qout ))
 # For some reason we need to convert these numeric fields to char, then to number
