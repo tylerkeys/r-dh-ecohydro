@@ -7,8 +7,10 @@ library(httr);
 library(data.table);
 library(scales);
 
+save_directory <- "C:\\Users\\Elaina\\Documents\\HARP\\github\\plots"  
+
 #__________________________________________
-elf_qr_plot <- function(inputs, qr_calc_out, data, fxn_locations, startdate, enddate){
+elf_qr_plot <- function(inputs,qr_calc_out, data, startdate, enddate){
   
   #Load inputs from inputs
   x_metric <- inputs$x_metric 
@@ -33,8 +35,6 @@ elf_qr_plot <- function(inputs, qr_calc_out, data, fxn_locations, startdate, end
   plot_rursadj <- signif(qr_calc_out$qr_stats_out$stat_quantreg_adj_rsq, digits = 3)
   plot_rup <- signif(qr_calc_out$qr_stats_out$stat_quantreg_p, digits = 3)
 
-  save_directory <- fxn_locations
-  
   full_dataset <- data
   
   #Convert ghi input from sqmi to sqkm, and remove datapoints greater than the ghi DA threashold
@@ -95,7 +95,7 @@ elf_qr_plot <- function(inputs, qr_calc_out, data, fxn_locations, startdate, end
           ); 
         
         # END plotting function
-        filename <- paste("example","elf.png", sep="_")
+        filename <- paste("example","qr.png", sep="_")
         ggsave(file=filename, path = save_directory, width=8, height=6)
         
         
@@ -117,7 +117,7 @@ elf_qr_plot <- function(inputs, qr_calc_out, data, fxn_locations, startdate, end
                               enddate = enddate)
             elf_pct_chg (pct_inputs)
             
-            filename <- paste("example","pctchg.png", sep="_")
+            filename <- paste("qr","pctchg.png", sep="_")
             ggsave(file=filename, path = save_directory, width=8, height=5)
           } else {
             print (paste("Y-Intercept is negative, not generating pct_chg plot"));        
