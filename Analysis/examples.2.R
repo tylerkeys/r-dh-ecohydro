@@ -3,7 +3,7 @@ fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));  
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
 elid = 340118;
-runid = 997;
+runid = 990;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_Qout");
 #plot(elevs);
@@ -12,8 +12,11 @@ dat <- fn_get_runfile(elid, runid);
 plot(dat$impoundment_Qout,ylim=c(0,600), main = paste("Element ", elid, " with riser diam=", 3))
 points(dat$impoundment_Qin)
 
-# Just show a specific design storm
-destorm <- window(dat, start = as.POSIXct("1989-05-06 16:00"), end = as.POSIXct("1989-05-06 24:00"));
+# Just show a specific design storm 
+destorm <- window(dat, 
+  start = as.POSIXct("1989-05-06 16:00"), 
+  end = as.POSIXct("1989-05-06 24:00")
+);
 plot(destorm$impoundment_Qout,ylim=c(0,800), main = paste("Element ", elid, " with riser diam=", 3))
 points(destorm$impoundment_Qin);
 points(destorm$impoundment_Storage, pch = 10);
@@ -35,3 +38,10 @@ destorm2 <- cbind(destorm$impoundment_Qout,
 colnames(destorm2) <- c('Qout (cfs)', 'Elev (ft)', 'Mode', 'S (ac-ft)', 'dS');
 
 pander(destorm2)
+
+destormFP <- cbind(destorm$local_channel_Qin, 
+                  destorm$local_channel_Rin, 
+                  destorm$local_channel_Qout
+);
+colnames(destormFP) <- c('Qin (cfs)','Rin (cfs)',  'Qout (cfs)');
+pander(destormFP);

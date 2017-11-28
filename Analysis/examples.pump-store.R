@@ -11,12 +11,14 @@ source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
 
 elid = 339865; # Frederick Co pump-store
-runid = 31;
+runid = 16;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_lake_elev");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
+# Convert to numeric
+dat$month <- as.numeric(dat$month);
 plot(dat$impoundment_Qout,ylim=c(0,10))
 
 as.numeric(as.character( dat$Qreach ))
@@ -34,7 +36,93 @@ fdc(oneyr$Qintake, main="Flow Duration", log='', xlab="Flow Exceedence",
     ylab="Q cfs", verbose=FALSE);
 
 # plot drawdown
-dat$cons_pct <- as.numeric(as.character(dat$cons_remain_acft)) / as.numeric(as.character(dat$cons_pool_acft))
+dat$impoundment_use_remain_acft <- 3.07 * as.numeric(as.character(dat$impoundment_use_remain_mg));
+dat$impfull_pct <- as.numeric(as.character(dat$impoundment_use_remain_acft)) / as.numeric(as.character(dat$impoundment_max_usable))
 
 par(las=2)
-plot(dat$cons_pct, ylim = c(0.0, 1.0))
+plot(dat$impfull_pct, ylim = c(0.0, 1.0))
+impfull_pct <- zoo(as.numeric(as.character( dat$impfull_pct )), order.by = dat$thisdate);
+g2_imp <- group2(impfull_pct);
+imp_modat <- group1(impfull_pct,'calendar','min')  # IHA function that calculates minimum monthly statistics for our data by water year	 
+# Monthly median storage minimums
+x <- quantile(imp_modat, 0.5, na.rm = TRUE);
+# Median % Full
+z <- cbind(
+  as.matrix(quantile(imp_modat[,"January"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"February"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"March"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"April"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"May"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"June"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"July"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"August"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"September"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"October"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"November"], probs = 0.5, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"December"], probs = 0.5, na.rm = TRUE)) 
+)
+# 10th % Full
+z <- cbind(
+  as.matrix(quantile(imp_modat[,"January"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"February"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"March"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"April"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"May"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"June"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"July"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"August"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"September"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"October"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"November"], probs = 0.1, na.rm = TRUE)), 
+  as.matrix(quantile(imp_modat[,"December"], probs = 0.1, na.rm = TRUE)) 
+)
+barplot(z)
+pander(z)
+# 10th % Full
+z = cbind(
+  as.matrix(subset(dat, month == 1)), 
+  as.matrix(subset(dat, month == 2)), 
+  as.matrix(subset(dat, month == 3)), 
+  as.matrix(subset(dat, month == 4)), 
+  as.matrix(subset(dat, month == 5)), 
+  as.matrix(subset(dat, month == 6)), 
+  as.matrix(subset(dat, month == 7)), 
+  as.matrix(subset(dat, month == 8)), 
+  as.matrix(subset(dat, month == 9)), 
+  as.matrix(subset(dat, month == 10)), 
+  as.matrix(subset(dat, month == 11)), 
+  as.matrix(subset(dat, month == 12))
+);
+
+boxplot(
+  as.numeric(subset(dat, month == 1)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 2)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 3)$"impfull_pct") , 
+  as.numeric(subset(dat, month == 4)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 5)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 6)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 7)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 8)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 9)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 10)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 11)$"impfull_pct"), 
+  as.numeric(subset(dat, month == 12)$"impfull_pct")
+);
+
+boxplot(
+  as.numeric(imp_modat[,"January"]),
+  as.numeric(imp_modat[,"February"]),
+  as.numeric(imp_modat[,"March"]),
+  as.numeric(imp_modat[,"April"]),
+  as.numeric(imp_modat[,"May"]),
+  as.numeric(imp_modat[,"June"]),
+  as.numeric(imp_modat[,"July"]),
+  as.numeric(imp_modat[,"August"]),
+  as.numeric(imp_modat[,"September"]),
+  as.numeric(imp_modat[,"October"]),
+  as.numeric(imp_modat[,"November"]),
+  as.numeric(imp_modat[,"December"]),
+  main="Distribution of Annual Minimum Percent Full by Month",
+  names=molabels
+);
+pander(z)
