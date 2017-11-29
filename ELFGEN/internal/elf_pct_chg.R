@@ -9,7 +9,7 @@ elf_pct_chg <- function(pct_inputs = list()){
   startdate <- pct_inputs$startdate
   enddate <- pct_inputs$enddate
 
-  its <- seq(0.1, 500, 0.01)
+  its <- seq(1, 1000, 0.1)
   xvalues = c(its)
   sa <- (ruslope*log(its))+ruint
   pct_list <- c(5,10,20,30,40,50)
@@ -50,8 +50,10 @@ plt2 <- ggplot(slope_table, aes(x=xvalues, y=pct_chgs_20)) +
     ) + 
   
   scale_x_log10(
-    limits = c(0.1,500),
-    breaks = trans_breaks("log10", function(x) {10^x})#,
+    #limits = c(0.1,500),
+    limits = c(1,500),
+    breaks = trans_breaks("log", function(x) {10^x})
+ #   breaks = trans_breaks("log10", function(x) {10^x})#,
     #labels = trans_format("log10", math_format(10^.x))
     #labels = round(x,digits = 0)
   ) +
