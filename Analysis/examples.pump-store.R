@@ -9,9 +9,10 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));  
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
+dirname(rstudioapi::getActiveDocumentContext()$path);
 
 elid = 339865; # Frederick Co pump-store
-runid = 16;
+runid = 114;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_lake_elev");
 #plot(elevs);
@@ -37,7 +38,7 @@ fdc(oneyr$Qintake, main="Flow Duration", log='', xlab="Flow Exceedence",
 
 # plot drawdown
 dat$impoundment_use_remain_acft <- 3.07 * as.numeric(as.character(dat$impoundment_use_remain_mg));
-dat$impfull_pct <- as.numeric(as.character(dat$impoundment_use_remain_acft)) / as.numeric(as.character(dat$impoundment_max_usable))
+dat$impfull_pct <- 100.0 * as.numeric(as.character(dat$impoundment_use_remain_acft)) / as.numeric(as.character(dat$impoundment_max_usable))
 
 par(las=2)
 plot(dat$impfull_pct, ylim = c(0.0, 1.0))
@@ -122,7 +123,7 @@ boxplot(
   as.numeric(imp_modat[,"October"]),
   as.numeric(imp_modat[,"November"]),
   as.numeric(imp_modat[,"December"]),
-  main="Distribution of Annual Minimum Percent Full by Month",
+  main=paste("Annual Min. % Full by Month (runid=", runid,")",sep=""),
   names=molabels
 );
 pander(z)
