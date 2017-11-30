@@ -9,7 +9,7 @@ elf_pct_chg <- function(pct_inputs = list()){
   startdate <- pct_inputs$startdate
   enddate <- pct_inputs$enddate
 
-  its <- seq(1, 1000, 0.1)
+  its <- seq(1, 500, 0.01)
   xvalues = c(its)
   sa <- (ruslope*log(its))+ruint
   pct_list <- c(5,10,20,30,40,50)
@@ -58,6 +58,8 @@ plt2 <- ggplot(slope_table, aes(x=xvalues, y=pct_chgs_20)) +
     #labels = round(x,digits = 0)
   ) +
   annotation_logticks(sides = "b")+
+  
+  scale_y_continuous(limits = c(0, 100))+
   
   ggtitle(ptitle)+
   labs(x=xaxis_title,y=yaxis_title)+
