@@ -30,6 +30,10 @@ fn_dh_elfstats <- function(
 #------------------------------------------------------------------
     elf_statistics <- paste(site,"export_elf_statistics",ftype,fstatus,analysis_timespan,yvar,sampres,stat_quantreg_qu,station_agg,stat_quantreg_glo,stat_quantreg_ghi,feature_ftype,xvar,sep = "/");
     print(paste("Using URI: ", elf_statistics));
+    region <- feature_ftype
+    XV <-xvar
+    YV <-yvar
     elf_statistics <- read.table(elf_statistics,header = TRUE, sep = ",");
+    write.csv(elf_statistics, file = paste(save_directory, "ELF_Stats_Breakpoints.", region, ".", YV, ".", XV,".csv", sep = ""), row.names = FALSE, quote = TRUE) #,qmethod = "double",sep = " "
     return (elf_statistics);
 }
