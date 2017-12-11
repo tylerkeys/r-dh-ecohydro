@@ -7,7 +7,7 @@ path <- "D:/Jkrstolic/R/deqEcoflows/GitHub/r-dh-ecohydro/Analysis/"
 #path <- "/Users/nrf46657/Desktop/VAHydro Development/GitHub/r-dh-ecohydro/Analysis/"
 
 #Set location of save path Choose one below
-#save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\stash_plots"                    
+#save_directory <- "C:/Users/nrf46657/Desktop/VAHydro Development/GitHub/stash_plots/"                    
 save_directory <- "D:/Jkrstolic/R/deqEcoflows/Breakpoints/"
 
 source(paste(path,"query_elf_statistics.R", sep = ""))

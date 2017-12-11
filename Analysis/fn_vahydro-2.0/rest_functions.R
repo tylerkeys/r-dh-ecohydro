@@ -158,3 +158,62 @@ postProperty <- function(inputs,fxn_locations,base_url,prop){
   }
 
 }
+
+
+getFeature <- function(inputs, base_url, feature){
+  
+  pbody = list(
+  );
+  if (!is.null(inputs$bundle)) {
+    pbody$bundle = inputs$bundle;
+  }
+  if (!is.null(inputs$hydrocode)) {
+    pbody$hydrocode = inputs$hydrocode;
+  }
+  if (!is.null(inputs$ftype)) {
+    pbody$ftype = inputs$ftype;
+  }
+  if (!is.null(inputs$hydroid)) {
+    pbody$hydroid = inputs$hydroid;
+  }
+  if (!is.null(inputs$name)) {
+    pbody$name = inputs$name;
+  }
+  
+  feature <- GET(
+    paste(base_url,"/dh_feature.json",sep=""), 
+    add_headers(HTTP_X_CSRF_TOKEN = token),
+    query = pbody, 
+    encode = "json"
+  );
+  feature_cont <- content(feature);
+  
+  if (length(feature_cont$list) != 0) {
+    print(paste("Number of properties found: ",length(feature_cont$list),sep=""))
+    
+    feature <- data.frame(
+      hydroid=character(),
+      name=character(),
+      bundle=character(),
+      hydrocode=character(), 
+      ftype=character(),
+      stringsAsFactors=FALSE
+    ) 
+    
+    i <- 1
+    for (i in 1:length(feature_cont$list)) {
+      
+      feature_i <- data.frame(
+        hydroid = feature_cont$list[[i]]$hydroid,
+        name = feature_cont$list[[i]]$name,
+        bundle = feature_cont$list[[i]]$bundle,
+        hydrocode = feature_cont$list[[i]]$hydrocode,
+        ftype = feature_cont$list[[i]]$ftype
+      )
+      feature <- rbind(feature, feature_i)
+    }
+  } else {
+    print("This property does not exist")
+  }
+  feature <- feature
+}

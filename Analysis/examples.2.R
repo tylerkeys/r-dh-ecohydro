@@ -2,28 +2,39 @@
 fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));  
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
-elid = 340118;
-runid = 990;
+elid = 340136;
+runid = 9997;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_Qout");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
-plot(dat$impoundment_Qout,ylim=c(0,600), main = paste("Element ", elid, " with riser diam=", 3))
-points(dat$impoundment_Qin)
+plot(
+  dat$impoundment_Qout,ylim=c(0,200), 
+  main = paste("Element ", elid, " with riser diam=", 3)
+);
+points(dat$impoundment_Qin);
+lines(dat$impoundment_Qin);
 
 # Just show a specific design storm 
-destorm <- window(dat, 
+destorm <- window(
+  dat, 
   start = as.POSIXct("1989-05-06 16:00"), 
   end = as.POSIXct("1989-05-06 24:00")
 );
-plot(destorm$impoundment_Qout,ylim=c(0,800), main = paste("Element ", elid, " with riser diam=", 3))
+plot(
+  destorm$impoundment_Qout,
+  ylim=c(0,150), 
+  main = paste("Element ", elid, " with riser diam=", 3)
+);
 points(destorm$impoundment_Qin);
-points(destorm$impoundment_Storage, pch = 10);
-legend("topright", c("Qout","Qin", "S")
+#points(destorm$impoundment_Storage, pch = 10);
+legend(
+  "topright", 
+  c("Qout","Qin")
 );
 
-# Format for taabular output
+# Format for tabular output
 destorm$impoundment_Qout <- round(as.numeric(destorm$impoundment_Qout,1));
 destorm$impoundment_lake_elev <- round(as.numeric(destorm$impoundment_lake_elev),1);
 destorm$impoundment_Storage <- round(as.numeric(destorm$impoundment_Storage),1);
@@ -36,6 +47,7 @@ destorm2 <- cbind(destorm$impoundment_Qout,
                   destorm$deltaS
 );
 colnames(destorm2) <- c('Qout (cfs)', 'Elev (ft)', 'Mode', 'S (ac-ft)', 'dS');
+
 
 pander(destorm2)
 
