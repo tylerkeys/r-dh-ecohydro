@@ -136,7 +136,7 @@ boxplot(
 round(mean(as.numeric(wudat$impoundment_demand_met_mgd),3));
 round(mean(as.numeric(wudat$impoundment_demand),2));
 
-plot(wudat$impoundment_demand,ylim=c(4,10));
-lines(wudat$impoundment_demand_met_mgd)
+plot(wudat$impoundment_demand,ylim=c(0,10));
+lines(wudat$impoundment_demand_met_mgd);
 
 pander(z)
