@@ -1,440 +1,439 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
- <idinfo>
-  <citation>
-   <citeinfo>
-    <origin>Jennifer L Rapp</origin>
-    <pubdate>20171212</pubdate>
-    <title>Summarization of the IchthyMaps Historical Stream Fish Distribution Database for Virginia</title>
-    <geoform>Tabular Digital Data</geoform>
-    <pubinfo>
-     <pubplace>Reston, VA</pubplace>
-     <publish>U.S. Geological Survey</publish>
-    </pubinfo>
-    <onlink>http://doi.org/XXXX</onlink>
-   </citeinfo>
-  </citation>
-  <descript>
-   <abstract>The IcthyMaps fish occurrence database was utilized to test community biodiversity hypotheses in rivers throughout Virginia and adjacent states. This subset of IchthyMaps contains about 60,170 presence records for 257 species and subspecies in the region. This initial use of the IcthyMaps dataset provided an opportunities to validate biodiversity estimates from other datasets and confirmed similar biodiversity across stream sized in the study area.</abstract>
-   <purpose>This dataset was adapted from the IcthyMaps database to assess biodiversity in river reaches in Virginia and adjacent rivers.  The data layer has been used in the Virginia DEQ-USGS ecological limit function research and may server as a basic layer in the state water withdrawal permitting process.</purpose>
-  </descript>
-  <timeperd>
-   <timeinfo>
-    <rngdates>
-     <begdate>19500101</begdate>
-     <enddate>19901231</enddate>
-    </rngdates>
-   </timeinfo>
-   <current>publication date</current>
-  </timeperd>
-  <status>
-   <progress>Complete</progress>
-   <update>Not planned</update>
-  </status>
-  <spdom>
-   <bounding>
-    <westbc>-125.0</westbc>
-    <eastbc>-65.0</eastbc>
-    <northbc>50.0</northbc>
-    <southbc>24.0</southbc>
-   </bounding>
-  </spdom>
-  <keywords>
-   <theme>
-    <themekt>USGS Biocomplexity Thesaurus</themekt>
-    <themekey>Biological sampling</themekey>
-    <themekey>Freshwater fishes</themekey>
-    <themekey>Species presence</themekey>
-    <themekey>Spatial distribution</themekey>
-    <themekey>Historical data</themekey>
-    <themekey>Ecological distribution</themekey>
-   </theme>
-   <theme>
-    <themekt>None</themekt>
-    <themekey>Species presence</themekey>
-    <themekey>Historical data</themekey>
-   </theme>
-   <place>
-    <placekt>None</placekt>
-    <placekey>United States</placekey>
-    <placekey>District of Columbia</placekey>
-    <placekey>Deleware</placekey>
-    <placekey>Kentucky</placekey>
-    <placekey>Maryland</placekey>
-    <placekey>North Carolina</placekey>
-    <placekey>Pennsylvania</placekey>
-    <placekey>Tennessee</placekey>
-    <placekey>Virginia</placekey>
-    <placekey>West Virginia</placekey>
-   </place>
-  </keywords>
-  <accconst>none</accconst>
-  <useconst>The source data for this summary dataset is the IcthyMaps. See source information for additional details. No restrictions apply.</useconst>
-  <ptcontac>
-   <cntinfo>
-    <cntperp>
-     <cntper>Jennifer L Rapp</cntper>
-     <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
-    </cntperp>
-    <cntpos>Geographer</cntpos>
-    <cntaddr>
-     <addrtype>mailing address</addrtype>
-     <address>1730 East Parham Road</address>
-     <city>Richmond</city>
-     <state>VA</state>
-     <postal>23228</postal>
-     <country>United States</country>
-    </cntaddr>
-    <cntvoice>804-261-2635</cntvoice>
-    <cntfax>804-261-2657</cntfax>
-    <cntemail>jrapp@usgs.gov</cntemail>
-   </cntinfo>
-  </ptcontac>
-  <datacred>This project was funded by a cooperative agreement between the U.S. Geological Survey Virginia and West Virginia Water Science Center and the Virginia Department of Environmental Quality.</datacred>
-  <native>Environment as of Metadata Creation: Microsoft [Unknown] Version 6.2 (Build 9200) ; Esri ArcGIS 10.5 (Build 6491) Service Pack N/A (Build N/A)</native>
- </idinfo>
- <dataqual>
-  <attracc>
-   <attraccr>The dataset was quality assured by the authors of IcthyMaps, and this evaluation verified that species were not represented twice from differenc source publications for the same river reach.</attraccr>
-  </attracc>
-  <logic>Check for duplicates were conducted as well as verification with outside data sources.</logic>
-  <complete>The data are considered complete.  They were checked to identify the river reaches that contain presence of taxa for use in these analyses.</complete>
-  <posacc>
-   <horizpa>
-    <horizpar>Positional accuracy was not assessed, as it was completed when the IcthyMaps dataset was created.</horizpar>
-   </horizpa>
-   <vertacc>
-    <vertaccr>A formal accuracy assessment of the vertical positional information in the data set is not applicable.</vertaccr>
-   </vertacc>
-  </posacc>
-  <lineage>
-   <srcinfo>
-    <srccite>
-     <citeinfo>
-      <origin>Emmanuel Frimpong, Jian Huang, and Yu Liang</origin>
-      <pubdate>2015-05</pubdate>
-      <title>Historical Stream Fish Distribution Database for the Conterminous United States (1950-1990): IchthyMaps</title>
-      <geoform>Other</geoform>
-      <pubinfo>
-       <pubplace>Reston, VA</pubplace>
-       <publish>U.S. Geological Survey</publish>
-      </pubinfo>
-      <onlink>http://dx.doi.org/doi:10.5066/F7M32ST8</onlink>
-     </citeinfo>
-    </srccite>
-    <typesrc>Digital and/or Hardcopy Resources</typesrc>
-    <srctime>
-     <timeinfo>
-      <rngdates>
-       <begdate>19500101</begdate>
-       <enddate>19901231</enddate>
-      </rngdates>
-     </timeinfo>
-     <srccurr>publication date</srccurr>
-    </srctime>
-    <srccitea>IcthyMaps</srccitea>
-    <srccontr>The IcthyMaps database was downloaded from Science Base and serves as the authoritative source for the historic number of taxa in each river segment in this study.</srccontr>
-   </srcinfo>
-   <procstep>
-    <procdesc>The IcthyMaps dataset was used to create a subsample of data for Virginia and adjacent states through extrating data based on the state codes and HUC4 identification codes present in the IcthyMaps dataset.</procdesc>
-    <procdate>20161012</procdate>
-   </procstep>
-   <procstep>
-    <procdesc>The total number of taxa present in a stream reach were summarized for each NHDPlus V2 COMID in the subset of data.</procdesc>
-    <procdate>20161015</procdate>
-   </procstep>
-   <procstep>
-    <procdesc>Added attributes for mean annual streamflow and monthly streamflow from the National Hydrography Dataset Plus V2 to the table.</procdesc>
-    <procdate>20161115</procdate>
-   </procstep>
-  </lineage>
- </dataqual>
- <spdoinfo>
-  <indspref>The data can be linked to the NHDPlusV2 using the field 'COMID_NHDv2'.  The data can also be linked to the watershed boundary dataset (WBD) by using the fields 'HUC12' and 'HUC8'</indspref>
-  <direct>Vector</direct>
- </spdoinfo>
- <eainfo>
-  <detailed>
-   <enttyp>
-    <enttypl>Attribute Table</enttypl>
-    <enttypd>Table containing attribute information associated with the data set.</enttypd>
-    <enttypds>Producer defined</enttypds>
-   </enttyp>
-   <attr>
-    <attrlabl>COMID_NHDv2</attrlabl>
-    <attrdef>common identifier of the NHDPlusV2 feature</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>433724</rdommin>
-      <rdommax>936010075</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>HUC6</attrlabl>
-    <attrdef>6-digit hydrologic unit code, stored in text format</attrdef>
-    <attrdefs>USGS National Watershed Boundary Dataset (WBD) 20140924 National Shapefile</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>20403</rdommin>
-      <rdommax>60102</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>NT_Taxa</attrlabl>
-    <attrdef>Total number of taxa present in the stream reach based on the IcthyMaps historic dataset.</attrdef>
-    <attrdefs>Producer defined</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>1</rdommin>
-      <rdommax>46</rdommax>
-      <attrunit>undefined</attrunit>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>GNIS_NAME</attrlabl>
-    <attrdef>Feature Name for streams from the Geographic Names Information System. “Null” if no name associated with the feature</attrdef>
-    <attrdefs>USGS</attrdefs>
-    <attrdomv>
-     <udom>Stream names like "Shenandoah River" are included in this field.</udom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Jan_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.007</rdommin>
-      <rdommax>16613.689</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Feb_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.007</rdommin>
-      <rdommax>19410.721</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Mar_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.008</rdommin>
-      <rdommax>25888.771</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Apr_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.006</rdommin>
-      <rdommax>22579.52</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>May_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.005</rdommin>
-      <rdommax>17177.49</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Jun_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.002</rdommin>
-      <rdommax>10960.143</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Jul_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.001</rdommin>
-      <rdommax>5942.544</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Aug_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.001</rdommin>
-      <rdommax>5000.566</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Sep_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0</rdommin>
-      <rdommax>6125.567</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Oct_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0</rdommin>
-      <rdommax>7579.738</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Nov_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.001</rdommin>
-      <rdommax>9525.084</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>Dec_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.005</rdommin>
-      <rdommax>13934.149</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>MA_Flow_cfs</attrlabl>
-    <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean annual streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0.004</rdommin>
-      <rdommax>13473.546</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>StreamOrder</attrlabl>
-    <attrdef>Strahler stream order from the National Hydrography Dataset Plus V2 data tables.</attrdef>
-    <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>0</rdommin>
-      <rdommax>7</rdommax>
-      <attrunit>1</attrunit>
-     </rdom>
-    </attrdomv>
-   </attr>
-   <attr>
-    <attrlabl>HUC8</attrlabl>
-    <attrdef>8-digit hydrologic unit code, stored in text format</attrdef>
-    <attrdefs>USGS National Watershed Boundary Dataset (WBD) 20140924 National Shapefile</attrdefs>
-    <attrdomv>
-     <rdom>
-      <rdommin>2040303</rdommin>
-      <rdommax>6010207</rdommax>
-     </rdom>
-    </attrdomv>
-   </attr>
-  </detailed>
- </eainfo>
- <distinfo>
-  <distrib>
-   <cntinfo>
-    <cntperp>
-     <cntper>Jennifer L Rapp</cntper>
-     <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
-    </cntperp>
-    <cntpos>Geographer</cntpos>
-    <cntaddr>
-     <addrtype>mailing address</addrtype>
-     <address>1730 East Parham Road</address>
-     <city>Richmond</city>
-     <state>VA</state>
-     <postal>23228</postal>
-     <country>United States</country>
-    </cntaddr>
-    <cntvoice>804-261-2635</cntvoice>
-    <cntfax>804-261-2657</cntfax>
-    <cntemail>jrapp@usgs.gov</cntemail>
-   </cntinfo>
-  </distrib>
-  <distliab>Although the data released via the U.S. Geological Survey have undergone data formatting quality review prior to posting, errors or inaccuracies may still exist in the data.  Neither the U.S. Government, the Department of the Interior, nor the USGS, nor any of their employees, contractors, or subcontractors, make any warranty, express or implied, nor assume any legal liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, nor represent that its use would not infringe on privately owned rights.  This disclaimer applies both to individual and aggregate uses of the data.  The USGS shall not be held liable for improper or incorrect use of the data.</distliab>
-  <stdorder>
-   <digform>
-    <digtinfo>
-     <formname>Tabular Digital Data</formname>
-     <formcont>A CSV file containing the IcthyMaps Data</formcont>
-    </digtinfo>
-    <digtopt>
-     <onlinopt>
-      <computer>
-       <networka>
-        <networkr>http://doi.org/XXXX</networkr>
-       </networka>
-      </computer>
-     </onlinopt>
-    </digtopt>
-   </digform>
-   <fees>none</fees>
-  </stdorder>
- </distinfo>
- <metainfo>
-  <metd>20171212</metd>
-  <metc>
-   <cntinfo>
-    <cntperp>
-     <cntper>Jennifer L Rapp</cntper>
-     <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
-    </cntperp>
-    <cntpos>Geographer</cntpos>
-    <cntaddr>
-     <addrtype>mailing address</addrtype>
-     <address>1730 East Parham Road</address>
-     <city>Richmond</city>
-     <state>VA</state>
-     <postal>23228</postal>
-     <country>United States</country>
-    </cntaddr>
-    <cntvoice>804-261-2635</cntvoice>
-    <cntfax>804-261-2657</cntfax>
-    <cntemail>jrapp@usgs.gov</cntemail>
-   </cntinfo>
-  </metc>
-  <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
-  <metstdv>FGDC-STD-001-1998</metstdv>
- </metainfo>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>Jennifer L Rapp</origin>
+        <pubdate>20171212</pubdate>
+        <title>Summarization of the IchthyMaps Historical Stream Fish Distribution Database for Virginia</title>
+        <geoform>Tabular Digital Data</geoform>
+        <pubinfo>
+          <pubplace>Reston, VA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>http://doi.org/XXXX</onlink>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>The IcthyMaps fish occurrence database was utilized to test community biodiversity hypotheses in rivers throughout Virginia and adjacent states. This subset of IchthyMaps contains about 60,170 presence records for 257 species and subspecies in the region. This initial use of the IcthyMaps dataset provided an opportunities to validate biodiversity estimates from other datasets and confirmed similar biodiversity across various sized streams in the study area.</abstract>
+      <purpose>This dataset was adapted from the IcthyMaps database to assess biodiversity in river reaches in Virginia and adjacent rivers.  The data layer has been used in the Virginia DEQ-USGS ecological limit function research and may server as a basic layer in the state water withdrawal permitting process.</purpose>
+    </descript>
+    <timeperd>
+      <timeinfo>
+        <rngdates>
+          <begdate>19500101</begdate>
+          <enddate>19901231</enddate>
+        </rngdates>
+      </timeinfo>
+      <current>publication date</current>
+    </timeperd>
+    <status>
+      <progress>Complete</progress>
+      <update>Not planned</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-125.0</westbc>
+        <eastbc>-65.0</eastbc>
+        <northbc>50.0</northbc>
+        <southbc>24.0</southbc>
+      </bounding>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>USGS Biocomplexity Thesaurus</themekt>
+        <themekey>Biological sampling</themekey>
+        <themekey>Freshwater fishes</themekey>
+        <themekey>Species presence</themekey>
+        <themekey>Spatial distribution</themekey>
+        <themekey>Historical data</themekey>
+        <themekey>Ecological distribution</themekey>
+      </theme>
+      <theme>
+        <themekt>None</themekt>
+        <themekey>Species presence</themekey>
+        <themekey>Historical data</themekey>
+      </theme>
+      <place>
+        <placekt>None</placekt>
+        <placekey>United States</placekey>
+        <placekey>District of Columbia</placekey>
+        <placekey>Deleware</placekey>
+        <placekey>Kentucky</placekey>
+        <placekey>Maryland</placekey>
+        <placekey>North Carolina</placekey>
+        <placekey>Pennsylvania</placekey>
+        <placekey>Tennessee</placekey>
+        <placekey>Virginia</placekey>
+        <placekey>West Virginia</placekey>
+      </place>
+    </keywords>
+    <accconst>none</accconst>
+    <useconst>The source data for this summary dataset is the IcthyMaps. See source information for additional details. No restrictions apply.</useconst>
+    <ptcontac>
+      <cntinfo>
+        <cntperp>
+          <cntper>Jennifer L Rapp</cntper>
+          <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
+        </cntperp>
+        <cntpos>Geographer</cntpos>
+        <cntaddr>
+          <addrtype>mailing address</addrtype>
+          <address>1730 East Parham Road</address>
+          <city>Richmond</city>
+          <state>VA</state>
+          <postal>23228</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>804-261-2635</cntvoice>
+        <cntfax>804-261-2657</cntfax>
+        <cntemail>jrapp@usgs.gov</cntemail>
+      </cntinfo>
+    </ptcontac>
+    <datacred>This project was funded by a cooperative agreement between the U.S. Geological Survey Virginia and West Virginia Water Science Center and the Virginia Department of Environmental Quality.</datacred>
+    <native>Environment as of Metadata Creation: Microsoft [Unknown] Version 6.2 (Build 9200) ; Esri ArcGIS 10.5 (Build 6491) Service Pack N/A (Build N/A)</native>
+  </idinfo>
+  <dataqual>
+    <attracc>
+      <attraccr>The dataset was quality assured by the authors of IcthyMaps, and this evaluation verified that species were not represented twice from differenc source publications for the same river reach.</attraccr>
+    </attracc>
+    <logic>Check for duplicates were conducted as well as verification with outside data sources.</logic>
+    <complete>The data are considered complete.  They were checked to identify the river reaches that contain presence of taxa for use in these analyses.</complete>
+    <posacc>
+      <horizpa>
+        <horizpar>Positional accuracy was not assessed, as it was completed when the IcthyMaps dataset was created.</horizpar>
+      </horizpa>
+      <vertacc>
+        <vertaccr>A formal accuracy assessment of the vertical positional information in the data set is not applicable.</vertaccr>
+      </vertacc>
+    </posacc>
+    <lineage>
+      <srcinfo>
+        <srccite>
+          <citeinfo>
+            <origin>Emmanuel Frimpong, Jian Huang, and Yu Liang</origin>
+            <pubdate>2015-05</pubdate>
+            <title>Historical Stream Fish Distribution Database for the Conterminous United States (1950-1990): IchthyMaps</title>
+            <geoform>Other</geoform>
+            <pubinfo>
+              <pubplace>Reston, VA</pubplace>
+              <publish>U.S. Geological Survey</publish>
+            </pubinfo>
+            <onlink>http://dx.doi.org/doi:10.5066/F7M32ST8</onlink>
+          </citeinfo>
+        </srccite>
+        <typesrc>Digital and/or Hardcopy Resources</typesrc>
+        <srctime>
+          <timeinfo>
+            <rngdates>
+              <begdate>19500101</begdate>
+              <enddate>19901231</enddate>
+            </rngdates>
+          </timeinfo>
+          <srccurr>publication date</srccurr>
+        </srctime>
+        <srccitea>IcthyMaps</srccitea>
+        <srccontr>The IcthyMaps database was downloaded from Science Base and serves as the authoritative source for the historic number of taxa in each river segment in this study.</srccontr>
+      </srcinfo>
+      <procstep>
+        <procdesc>The IcthyMaps dataset was used to create a subsample of data for Virginia and adjacent states through extrating data based on the state codes and HUC4 identification codes present in the IcthyMaps dataset.</procdesc>
+        <procdate>20161012</procdate>
+      </procstep>
+      <procstep>
+        <procdesc>The total number of taxa present in a stream reach were summarized for each NHDPlus V2 COMID in the subset of data.</procdesc>
+        <procdate>20161015</procdate>
+      </procstep>
+      <procstep>
+        <procdesc>Added attributes for mean annual streamflow and monthly streamflow from the National Hydrography Dataset Plus V2 to the table.</procdesc>
+        <procdate>20161115</procdate>
+      </procstep>
+    </lineage>
+  </dataqual>
+  <spdoinfo>
+    <indspref>The data can be linked to the NHDPlusV2 using the field 'COMID_NHDv2'.  The data can also be linked to the watershed boundary dataset (WBD) by using the fields 'HUC12' and 'HUC8'</indspref>
+    <direct>Vector</direct>
+  </spdoinfo>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>Attribute Table</enttypl>
+        <enttypd>Table containing attribute information associated with the data set.</enttypd>
+        <enttypds>Producer defined</enttypds>
+      </enttyp>
+      <attr>
+        <attrlabl>COMID_NHDv2</attrlabl>
+        <attrdef>common identifier of the NHDPlusV2 feature</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>433724</rdommin>
+            <rdommax>936010075</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>HUC6</attrlabl>
+        <attrdef>6-digit hydrologic unit code, stored in text format</attrdef>
+        <attrdefs>USGS National Watershed Boundary Dataset (WBD) 20140924 National Shapefile</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>20403</rdommin>
+            <rdommax>60102</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>NT_Taxa</attrlabl>
+        <attrdef>Total number of taxa present in the stream reach based on the IcthyMaps historic dataset.</attrdef>
+        <attrdefs>Producer defined</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>1</rdommin>
+            <rdommax>46</rdommax>
+            <attrunit>undefined</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>GNIS_NAME</attrlabl>
+        <attrdef>Feature Name for streams from the Geographic Names Information System. “Null” if no name associated with the feature</attrdef>
+        <attrdefs>USGS</attrdefs>
+        <attrdomv>
+          <udom>Stream names like "Shenandoah River" are included in this field.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Jan_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.007</rdommin>
+            <rdommax>16613.689</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Feb_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.007</rdommin>
+            <rdommax>19410.721</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Mar_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.008</rdommin>
+            <rdommax>25888.771</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Apr_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.006</rdommin>
+            <rdommax>22579.52</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>May_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.005</rdommin>
+            <rdommax>17177.49</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Jun_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.002</rdommin>
+            <rdommax>10960.143</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Jul_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.001</rdommin>
+            <rdommax>5942.544</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Aug_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.001</rdommin>
+            <rdommax>5000.566</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Sep_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0</rdommin>
+            <rdommax>6125.567</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Oct_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0</rdommin>
+            <rdommax>7579.738</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Nov_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.001</rdommin>
+            <rdommax>9525.084</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Dec_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean monthly streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.005</rdommin>
+            <rdommax>13934.149</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>MA_Flow_cfs</attrlabl>
+        <attrdef>Modeled streamflow from the Enhanced Runoff Method table, represents mean annual streamflow for 1971-2000 for each river segment. Converted to cubic feet per second (cfs)</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0.004</rdommin>
+            <rdommax>13473.546</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>StreamOrder</attrlabl>
+        <attrdef>Strahler stream order from the National Hydrography Dataset Plus V2 data tables.</attrdef>
+        <attrdefs>National Hydrography Dataset Plus Version 2</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>0</rdommin>
+            <rdommax>7</rdommax>
+            <attrunit>1</attrunit>
+          </rdom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>HUC8</attrlabl>
+        <attrdef>8-digit hydrologic unit code, stored in text format</attrdef>
+        <attrdefs>USGS National Watershed Boundary Dataset (WBD) 20140924 National Shapefile</attrdefs>
+        <attrdomv>
+          <rdom>
+            <rdommin>2040303</rdommin>
+            <rdommax>6010207</rdommax>
+          </rdom>
+        </attrdomv>
+      </attr>
+    </detailed>
+  </eainfo>
+  <distinfo>
+    <distrib>
+      <cntinfo>
+        <cntperp>
+          <cntper>Jennifer L Rapp</cntper>
+          <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
+        </cntperp>
+        <cntpos>Geographer</cntpos>
+        <cntaddr>
+          <addrtype>mailing address</addrtype>
+          <address>1730 East Parham Road</address>
+          <city>Richmond</city>
+          <state>VA</state>
+          <postal>23228</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>804-261-2635</cntvoice>
+        <cntfax>804-261-2657</cntfax>
+        <cntemail>jrapp@usgs.gov</cntemail>
+      </cntinfo>
+    </distrib>
+    <distliab>Although the data released via the U.S. Geological Survey have undergone data formatting quality review prior to posting, errors or inaccuracies may still exist in the data.  Neither the U.S. Government, the Department of the Interior, nor the USGS, nor any of their employees, contractors, or subcontractors, make any warranty, express or implied, nor assume any legal liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, nor represent that its use would not infringe on privately owned rights.  This disclaimer applies both to individual and aggregate uses of the data.  The USGS shall not be held liable for improper or incorrect use of the data.</distliab>
+    <stdorder>
+      <digform>
+        <digtinfo>
+          <formname>Tabular Digital Data</formname>
+          <formcont>A CSV file containing the IcthyMaps Data</formcont>
+        </digtinfo>
+        <digtopt>
+          <onlinopt>
+            <computer>
+              <networka>
+                <networkr>http://doi.org/XXXX</networkr>
+              </networka>
+            </computer>
+          </onlinopt>
+        </digtopt>
+      </digform>
+      <fees>none</fees>
+    </stdorder>
+  </distinfo>
+  <metainfo>
+    <metd>20171212</metd>
+    <metc>
+      <cntinfo>
+        <cntperp>
+          <cntper>Jennifer L Rapp</cntper>
+          <cntorg>U.S. Geological Survey, Northeast Region</cntorg>
+        </cntperp>
+        <cntpos>Geographer</cntpos>
+        <cntaddr>
+          <addrtype>mailing address</addrtype>
+          <address>1730 East Parham Road</address>
+          <city>Richmond</city>
+          <state>VA</state>
+          <postal>23228</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>804-261-2635</cntvoice>
+        <cntfax>804-261-2657</cntfax>
+        <cntemail>jrapp@usgs.gov</cntemail>
+      </cntinfo>
+    </metc>
+    <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+  </metainfo>
 </metadata>
