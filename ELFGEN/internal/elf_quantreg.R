@@ -126,7 +126,8 @@ admincode <-paste(Hydroid,"_fe_quantreg",sep="");
 print("Storing quantile regression.");
             adminid <- elf_store_data(qd, token, inputs, adminid)
            } else {
-            adminid <- paste(search_code,"_fe_quantreg",sep="") #Plot images are stored using watershed hydrocode when NOT performing REST 
+            #Plot images are stored using watershed hydrocode when NOT performing REST 
+            adminid <- paste(search_code,"fe_quantreg",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,"0",ghi, sep='_');
            }
 
             #Display only 3 significant digits on plots

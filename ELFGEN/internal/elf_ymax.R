@@ -137,7 +137,8 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
         print("Storing quantile regression.");
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
-        adminid <- paste(search_code,"_fe_quantreg_ymax",sep="") #Plot images are stored using watershed hydrocode when NOT performing REST 
+        #Plot images are stored using watershed hydrocode when NOT performing REST 
+        adminid <- paste(search_code,"fe_quantreg_ymax",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan, sep='_');
       }
       
       

@@ -108,7 +108,8 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
         print("Storing quantile regression.");
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
-        adminid <- paste(search_code,"_fe_twopoint",sep="") #Plot images are stored using watershed hydrocode when NOT performing REST 
+        #Plot images are stored using watershed hydrocode when NOT performing REST 
+        adminid <- paste(search_code,"fe_twopoint",x_metric,y_metric,station_agg,sampres,analysis_timespan, sep='_');
       }
       
       #Display only 3 significant digits on plots
