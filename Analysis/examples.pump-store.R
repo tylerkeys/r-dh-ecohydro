@@ -1,3 +1,11 @@
+---
+title: "Watershed Flow Summary"
+output: word_document
+---
+```{r, echo=FALSE,warning=FALSE,message=FALSE,error=FALSE,results='hide'}
+library(pander);
+library(httr);
+library(hydroTSM);
 library(pander);
 library(httr);
 library(hydroTSM);
@@ -11,8 +19,8 @@ source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
 dirname(rstudioapi::getActiveDocumentContext()$path);
 
-elid = 339865; # Frederick Co pump-store
-runid = 200;
+elid = 337648; # Frederick Co pump-store
+runid = 232;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_lake_elev");
 #plot(elevs);
@@ -33,7 +41,7 @@ fn_iha_7q10(flows)
 fn_iha_mlf(flows,8)
 g2 <- group2(flows);
 # plot monthly 10% flows?
-oneyr <- window(wudat, start = as.Date("1998-10-01"), end = as.Date("1999-09-30"));
+oneyr <- window(wudat, start = as.Date("2002-01-01"), end = as.Date("2002-12-31"));
 plot(oneyr$Qintake,ylim=c(0,300));
 fdc(oneyr$Qintake, main="Flow Duration", log='', xlab="Flow Exceedence",
     ylab="Q cfs", verbose=FALSE);
@@ -111,6 +119,20 @@ boxplot(
   as.numeric(subset(wudat, month == 11)$"impfull_pct"), 
   as.numeric(subset(wudat, month == 12)$"impfull_pct")
 );
+molabels = c(
+  'January', 
+  'February', 
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+);
 
 boxplot(
   as.numeric(imp_modat[,"January"]),
@@ -136,7 +158,8 @@ boxplot(
 round(mean(as.numeric(wudat$impoundment_demand_met_mgd),3));
 round(mean(as.numeric(wudat$impoundment_demand),2));
 
-plot(wudat$impoundment_demand,ylim=c(0,10));
+plot(wudat$impoundment_demand,ylim=c(0,15));
 lines(wudat$impoundment_demand_met_mgd);
 
-pander(z)
+pander(z);
+```

@@ -3,14 +3,14 @@ fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"fn_vahydro-1.0.R", sep = "/"));  
 source(paste(fxn_locations,"fn_iha.R", sep = "/"));  
 elid = 340136;
-runid = 9997;
+runid = 997;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_Qout");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
 plot(
-  dat$impoundment_Qout,ylim=c(0,200), 
+  dat$impoundment_Qout,ylim=c(0,75), 
   main = paste("Element ", elid, " with riser diam=", 3)
 );
 points(dat$impoundment_Qin);
@@ -19,15 +19,19 @@ lines(dat$impoundment_Qin);
 # Just show a specific design storm 
 destorm <- window(
   dat, 
-  start = as.POSIXct("1989-05-06 16:00"), 
-  end = as.POSIXct("1989-05-06 24:00")
+  start = as.POSIXct("1989-05-05 16:00"), 
+  end = as.POSIXct("1989-05-07 12:00")
 );
+par(pch=22, col="red") # plotting symbol and color
 plot(
-  destorm$impoundment_Qout,
-  ylim=c(0,150), 
-  main = paste("Element ", elid, " with riser diam=", 3)
+  destorm$impoundment_Qout,ylim=c(0,75), 
+  main = paste("Flow Alteration from Riser Structure in Small Impoundment"
+  )
 );
+par(pch=22, col="blue") # plotting symbol and color 
 points(destorm$impoundment_Qin);
+lines(destorm$impoundment_Qin);
+
 #points(destorm$impoundment_Storage, pch = 10);
 legend(
   "topright", 

@@ -4,6 +4,7 @@ library('zoo')
 library('IHA')
 library(PearsonDS)
 options(timeout=480); # set timeout to twice default level to avoid abort due to high traffic
+#dirname(rstudioapi::getActiveDocumentContext()$path);
 
 
 fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid = 37) {
