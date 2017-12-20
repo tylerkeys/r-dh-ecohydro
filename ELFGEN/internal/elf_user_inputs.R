@@ -6,8 +6,9 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 #----------------------------------------------
 
 #----FOR RUNNING LOCALLY:
-fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\r-dh-ecohydro\\ELFGEN\\"          #Specify location of supporting function .R files
-save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\stash_plots"                     #Specify location for storing plot images locally
+ #Specify location for storing plot images locally
+fxn_locations <- "D:\\Jkrstolic\\R\\deqEcoflows\\GitHub\\r-dh-ecohydro\\ELFGEN\\internal\\"  
+save_directory <- "D:\\Jkrstolic\\R\\deqEcoflows\\Breakpoints\\ELFs_PlotsReview\\TestDA\\"
 
 #----FOR RUNNING FROM SERVER:
 #fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/"
@@ -17,7 +18,7 @@ save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\st
 source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
 elf_rest_token (site, token)
 token <- elf_rest_token(site, token)
-#print(token)
+print(token)
 
 #------------------------------------------------------------------------------------------------
 #User inputs 
@@ -34,8 +35,8 @@ inputs <- list(
     'erom_q0001e_mean',
     'erom_q0001e_jan',
     'erom_q0001e_feb',
-    'erom_q0001e_mar', 
-    'erom_q0001e_apr', 
+    'erom_q0001e_mar',
+    'erom_q0001e_apr',
     'erom_q0001e_may',
     'erom_q0001e_june',
     'erom_q0001e_july',
@@ -43,9 +44,8 @@ inputs <- list(
     'erom_q0001e_sept',
     'erom_q0001e_oct',
     'erom_q0001e_nov',
-    'erom_q0001e_dec'
-  ),		
-  x_metric = 'nhdp_drainage_sqkm', #Flow metric to be plotted on the x-axis
+    'erom_q0001e_dec'),
+  x_metric = 'erom_q0001e_oct', #Flow metric to be plotted on the x-axis
   not_y_metric = c(
                'nhdp_drainage_sqkm',
                'aqbio_nt_bival',
@@ -63,14 +63,14 @@ inputs <- list(
     'ecoregion_iv',
     'ecoiii_huc6'
   ),#this can be used to process by multiple region types at once 
-  ws_ftype = c('hwi_region'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
-  target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
+  ws_ftype = c('nhd_huc6'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
+  target_hydrocode = '020802',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
   #analysis_timespan = '1990-2000',#used to subset data on date range 
   analysis_timespan = 'full',      #used to plot for entire timespan 
 
-  send_to_rest = "YES",            #"YES" to push ELF statistic outputs to VAHydro
+  send_to_rest = "NO",            #"YES" to push ELF statistic outputs to VAHydro
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
   sampres = 'species',                  
   #sampres = 'maj_fam_gen_spec',                  
@@ -82,10 +82,11 @@ inputs <- list(
                                    #   maj_species...........majority species (Benthics only)
   
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
-  pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
+  pw_it = "NO",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   ymax = "NO",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
-  glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
+  DA_Flow = "YES",   #Plot to examine Drainage area and Flow for a region (YES or NO)
+  glo = 72,   # PWIT Breakpoint lower guess (sqmi/cfs)
   ghi = 530, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
