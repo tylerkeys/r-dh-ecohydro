@@ -28,11 +28,11 @@ elf_retrieve_data <- function(inputs = list()){
   pw_it <- inputs$pw_it  
   twopoint <- inputs$twopoint
   token <- inputs$token
+  DA_Flow <- inputs$DA_Flow
 
 for (l in offset_ws_ftype:length(ws_ftype)) {
      
   print(paste("ws_ftype ",l,". of ",length(ws_ftype),". ",ws_ftype[l],sep=""))
-  
   #Automatic bundle specification (WILL BE ELIMINATED ONCE WE UPDATE VAHYDRO STORAGE SCHEME)
   if(ws_ftype[l] == "hwi_region"){
     bundle <- "ecoregion"
@@ -47,7 +47,6 @@ for (l in offset_ws_ftype:length(ws_ftype)) {
   } else {
     bundle <- "watershed" 
   }
-  
   #Pull in full list of Virginia watersheds for the specified ftype
   #If we define a hydrocode > 'XXXXXX' it will retrieve that single one
   HUClist_url_base <- paste(site,"/?q=export-regions/",bundle, sep = "");
@@ -75,22 +74,11 @@ for (k in offset_y_metric:length(y_metric)) {
       x_metric_code <-  x_metric[j];
       y_metric_code <-  y_metric[k];
 
-         
-      #note: add a 0 for the HUC6's or else the url doesn't work
-      if (ws_ftype_code == 'nhd_huc6') {
-        if (length(Watershed_Hydrocode[i]) <= 5) {
-          search_code <- paste('0', Watershed_Hydrocode[i], sep='');
-        }   
-      }
-      if (ws_ftype_code == 'nhd_huc10') {
-        if (length(Watershed_Hydrocode[i]) < 10) {
-          search_code <- paste('0', Watershed_Hydrocode[i], sep='');
-        }   
-      }
-      
-      uri <- paste(site,"export_fe_data_stripped",x_metric_code,y_metric_code,bundle,ws_ftype_code,sampres,search_code,sep="/")
-      print(paste("Using ", uri, sep=''));
-      data <- read.csv(uri, header = TRUE, sep = ",")
+      data <- vahydro_fe_data(
+        Watershed_Hydrocode[i],
+        x_metric_code,y_metric_code,
+        bundle,ws_ftype_code,sampres
+      );
       
       #makes sure all metric values are numeric and not factorial (fixes error with ni, total)
       data$metric_value <- as.numeric(data$metric_value)
@@ -172,7 +160,6 @@ for (k in offset_y_metric:length(y_metric)) {
                             elf_pw_it (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       if(twopoint == "YES") {print(paste("PLOTTING - method two-point function...",sep=""))
                             elf_twopoint (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
-      
 
         } #closes watershed for loop  
       } #closes x_metric for loop

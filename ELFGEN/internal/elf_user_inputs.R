@@ -1,5 +1,5 @@
 rm(list = ls())  #clear variables
-options(timeout=120); # set timeout to twice default level to avoid abort due to high traffic
+options(timeout=240); # set timeout to twice default level to avoid abort due to high traffic
  
 #----------------------------------------------
 site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d.bet OR d.dh
@@ -8,10 +8,12 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 #----FOR RUNNING LOCALLY:
 fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\r-dh-ecohydro\\ELFGEN\\"          #Specify location of supporting function .R files
 save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\stash_plots"                     #Specify location for storing plot images locally
+fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  
 
 #----FOR RUNNING FROM SERVER:
 #fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/"
 #save_directory <- "/var/www/html/files/fe/plots"
+#fxn_vahydro <- "/var/www/R/r-dh-ecohydro/Analysis/fn_vahydro-2.0/"
 
 #retrieve rest token
 source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
@@ -81,22 +83,26 @@ inputs <- list(
                                    #   maj_fam...............majority family (Benthics only)
                                    #   maj_species...........majority species (Benthics only)
   
+
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
-  pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   ymax = "NO",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
   glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
   ghi = 530, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
+  dataset_tag = 'ymax75', # unique indicator of a grouped dataset
+  # full_ymax_da75
+  # full_ymax_da530
   token = token
 ) 
 
 #------------------------------------------------------------------------------------------------
 #Load Functions               
 source(paste(fxn_locations,"elf_retrieve_data.R", sep = ""));  #loads function used to retrieve F:E data from VAHydro
-
+source(paste(fxn_vahydro,"rest_functions.R", sep = "")); 
 elf_retrieve_data (inputs) 
 
 ##############################################################################
