@@ -1,9 +1,8 @@
 library(httr);
 
-rest_token <- function(base_url, token){
-  
+rest_token <- function(base_url, token, rest_uname = FALSE, rest_pw = FALSE){
   #Cross-site Request Forgery Protection (Token required for POST and PUT operations)
-  csrf_url <- paste(base_url,"restws/session/token/",sep="");
+  csrf_url <- paste(base_url,"restws/session/token/",sep="/");
   if (interactive()) {
     print("Is interactive");
   } else {
@@ -13,19 +12,25 @@ rest_token <- function(base_url, token){
   #currently set up to allow infinite login attempts, but this can easily be restricted to a set # of attempts
   token <- c("rest_uname","rest_pw")
   login_attempts <- 1
-  while(length(token) == 2  && login_attempts <= Inf){
-        print(paste("login attempt #",login_attempts,sep=""))
-          
-            rest_uname <- readline(prompt="Enter REST user name: ")
-            rest_pw <- readline(prompt="Password: ")
-            csrf <- GET(url=csrf_url,authenticate(rest_uname,rest_pw));
-            token <- content(csrf);
-            #print(token)
-
-            if (length(token)==2){
-              print("Sorry, unrecognized username or password")
-            }
-            login_attempts <- login_attempts + 1
+  if (!is.character(rest_uname)) {
+    while(length(token) == 2  && login_attempts <= 5){
+      print(paste("login attempt #",login_attempts,sep=""))
+      
+      rest_uname <- readline(prompt="Enter REST user name: ")
+      rest_pw <- readline(prompt="Password: ")
+      csrf <- GET(url=csrf_url,authenticate(rest_uname,rest_pw));
+      token <- content(csrf);
+      print(token)
+      
+      if (length(token)==2){
+        print("Sorry, unrecognized username or password")
+      }
+      login_attempts <- login_attempts + 1
+    }
+  } else {
+    csrf <- GET(url=csrf_url,authenticate(rest_uname,rest_pw));
+    token <- content(csrf);
+    print(token)
   }
   
   if (length(token)==1){
@@ -34,12 +39,12 @@ rest_token <- function(base_url, token){
   } else {
     print("Login attempt unsuccessful")
   }
-    token <- token
+  token <- token
 } #close function
 
 
 getProperty <- function(inputs, base_url, prop){
-
+  
   #Convert varkey to varid - needed for REST operations 
   propdef_url<- paste(base_url,"/?q=vardefs.tsv/",inputs$varkey,sep="")
   propdef_table <- read.table(propdef_url,header = TRUE, sep = "\t")    
@@ -112,11 +117,11 @@ getProperty <- function(inputs, base_url, prop){
 
 
 postProperty <- function(inputs,fxn_locations,base_url,prop){
-
+  
   #Search for existing property matching supplied varkey, featureid, entity_type 
   dataframe <- getProperty(inputs, base_url, prop)
   pid <- as.character(dataframe$pid)
-
+  
   #Convert varkey to varid - needed for REST operations 
   propdef_url<- paste(base_url,"/?q=vardefs.tsv/",inputs$varkey,sep="")
   propdef_table <- read.table(propdef_url,header = TRUE, sep = "\t")    
@@ -141,26 +146,26 @@ postProperty <- function(inputs,fxn_locations,base_url,prop){
                  body = pbody,
                  encode = "json"
     );
-        if (prop$status == 201){prop <- paste("Status ",prop$status,", Property Created Successfully",sep="")
-        } else {prop <- paste("Status ",prop$status,", Error: Property Not Created Successfully",sep="")}
+    if (prop$status == 201){prop <- paste("Status ",prop$status,", Property Created Successfully",sep="")
+    } else {prop <- paste("Status ",prop$status,", Error: Property Not Created Successfully",sep="")}
     
   } else if (length(dataframe$pid) == 1){
     print("Single Property Exists, Updating...")
     prop <- PUT(paste(base_url,"/dh_properties/",pid,sep=""), 
-                 add_headers(HTTP_X_CSRF_TOKEN = token),
-                 body = pbody,
-                 encode = "json"
+                add_headers(HTTP_X_CSRF_TOKEN = token),
+                body = pbody,
+                encode = "json"
     );
-        if (prop$status == 200){prop <- paste("Status ",prop$status,", Property Updated Successfully",sep="")
-        } else {prop <- paste("Status ",prop$status,", Error: Property Not Updated Successfully",sep="")}
+    if (prop$status == 200){prop <- paste("Status ",prop$status,", Property Updated Successfully",sep="")
+    } else {prop <- paste("Status ",prop$status,", Error: Property Not Updated Successfully",sep="")}
   } else {
     prop <- print("Multiple Properties Exist, Execution Halted")
   }
-
+  
 }
 
 
-getFeature <- function(inputs, base_url, feature){
+getFeature <- function(inputs, token, base_url, feature){
   
   pbody = list(
   );
