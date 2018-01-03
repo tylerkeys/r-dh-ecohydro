@@ -7,8 +7,8 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
- 
+elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
+  
   #Load inputs
   x_metric <- x_metric_code
   y_metric <- y_metric_code
@@ -23,50 +23,130 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
   send_to_rest <- inputs$send_to_rest
   offset <- inputs$offset
   analysis_timespan <- inputs$analysis_timespan
+  #startdate <- inputs$startdate
+  #enddate <- inputs$enddate
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
+  glo <- inputs$glo
+  ghi <- inputs$ghi
+  dataset_tag <- inputs$dataset_tag
   
   full_dataset <- data
   
-
-  x <- data$attribute_value
-  y <- data$metric_value
+  #Statement to convert PWIT breakpoint boundaries for plotting against drainage area [convert cfs (which is roughly equal to mi^2) to km^2]
+  # store glo and ghi before converting for use in admincode/properties
+  u_input_lo = glo;
+  u_input_hi = ghi;
+  if(x_metric == "nhdp_drainage_sqkm") {
+    glo <- glo * 2.58999
+    ghi <- ghi * 2.58999
+  }
   
-  ymax <- max(y) #finds the max y-value
-  x.ymax <- subset(data, data$metric_value == ymax)
-  breakpt <- min(x.ymax$attribute_value)
+  #must round these boundary values so they fit in admincode 
+  glo <- round(glo,digits=0)
+  ghi <- round(ghi,digits=0)
+  
+  #Creates subset of data consisting of only the upper x% of the datapoints
+  ##The piecewise function then looks for a breakpoint between the user specified bounding values using only these upper points 
+  upper_points <- rq(metric_value ~ log(attribute_value),data = full_dataset, tau = quantile)
+  upper_points_newy <- c(log(full_dataset$attribute_value)*coef(upper_points)[2]+coef(upper_points)[1])
+  upper_points <- subset(full_dataset, full_dataset$metric_value > upper_points_newy)
+ 
+  x <- upper_points$attribute_value
+  y <- upper_points$metric_value
+  
+  #set initial guess range
+  breaks <- x[which(x >= glo & x <= ghi)]
+  as.numeric(breaks)
+  #print(breaks)
+  
+  #This is necessary in case no breaks are found
+  if(length(breaks) != 0) {
+  #Needed in case pwit function only locates a single break in the data    
+    if(length(breaks) == 1) {
+      breakpt <- breaks
+    }else{
+      
+    #mse <- numeric(length(breaks))
+    mse <- as.numeric(length(breaks))
+
+    for(n in 1:length(breaks)){
+      piecewise1 <- lm(y ~ x*(x < breaks[n]) + x*(x >= breaks[n]))
+      mse[n] <- summary(piecewise1)[6]
+    }
+    mse <- as.numeric(mse)
+    #remove any breaks that are NaN
+    mse[is.na(mse)] <- 100000
+    breakpt <- breaks[which(mse==min(mse))]
+    breakpt <- breakpt[1]
+    } #end of breaks == 1 loop 
+  
+  #Right Side of Breakpoint  
+  #---------------------------------------------------------------------------------
+    
+  data_RS <-data[(data$attribute_value >  breakpt),]
+  #print(head(data_RS))
+  
+  #If statement needed in case there are fewer than 4 datapoints to the right of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
+  duplicates_RS <- unique(data_RS$attribute_value, incomparables = FALSE)
+  if(nrow(data_RS) && length(duplicates_RS) > 3) {   
+  
+  upquant_RS <- rq(metric_value ~log(attribute_value),data = data_RS, tau = quantile)
+  newy_RS <- c(log(data_RS$attribute_value)*coef(upquant_RS)[2]+coef(upquant_RS)[1])
+  upper.quant_RS <- subset(data_RS, data_RS$metric_value > newy_RS)
+  print(paste("Upper quantile to the right of breakpoint has ", nrow(upper.quant_RS), "values"));
+ 
+  #If statement needed in case there are fewer than 4 datapoints in upper quantile on the right side of the breakpoint
+  if (nrow(upper.quant_RS) > 3) {
+    
+  regupper_RS <- lm(metric_value ~ log(attribute_value),data = upper.quant_RS)  
+  ru_RS <- summary(regupper_RS) #regression for upper quantile
+  
+  #If statement needed in case slope to right of breakpoint is "NA"
+  if (nrow(ru_RS$coefficients) > 1) {
+  
+  regfull_RS <- lm(metric_value ~ log(attribute_value),data = data_RS)            
+  rf_RS <- summary(regfull_RS)                                                   
+  rfint_RS <- round(rf_RS$coefficients[1,2], digits = 6)        #intercept 
+  rfslope_RS <- round(rf_RS$coefficients[2,1], digits = 6)         #slope of regression
+  rfrs_RS <- round(rf_RS$r.squared, digits = 6)                    #r squared of full dataset linear regression
+  rfp_RS <- round(rf_RS$coefficients[2,4], digits = 6)             #p-value of full dataset
+  rfcor_RS <- round(cor.test(log(data_RS$attribute_value),data_RS$metric_value)$estimate, digits = 6) #correlation coefficient of full dataset
+  rfcount_RS <- length(data_RS$metric_value) 
+  #---------------------------------------------------------------------------------
+  
+  data<-data[!(data$attribute_value > breakpt),]
+  subset_n <- length(data$metric_value)
+  
+  
+  
+  stat_quantreg_bkpt <-  breakpt
   if(x_metric == "nhdp_drainage_sqkm") {
     # convert the breakpoint found to sqmi from sqkm
-    print(paste("Converting: ", breakpt, "sqkm = ", breakpt / 2.58999, "sqmi"))
     stat_quantreg_bkpt <-  breakpt / 2.58999;
   } else {
     stat_quantreg_bkpt <-  breakpt;
   }
   
-  data<-data[!(data$attribute_value > breakpt),]
-  subset_n <- length(data$metric_value)
-
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
   duplicates <- unique(data$attribute_value, incomparables = FALSE)
-  if(nrow(data) && length(duplicates) > 3) {  
+  if(nrow(data) && length(duplicates) > 3) {   
 
-  up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
-  newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
-  upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
+    up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
+    newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
+    upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
     
-  print(paste("Upper quantile has ", nrow(upper.quant), "values"));
-  #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
-  if (nrow(upper.quant) > 3) {
+    print(paste("Upper quantile has ", nrow(upper.quant), "values"));
+    #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
+    if (nrow(upper.quant) > 3) {
       
-    regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
-    ru <- summary(regupper)                                                  #regression for upper quantile
-    #print(ru)
-    #print(ru$coefficients)
-      
-    #If statement needed in case slope is "NA"
-    if (nrow(ru$coefficients) > 1) {
-       
+      regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
+      ru <- summary(regupper) #regression for upper quantile
+
+      #If statement needed in case slope is "NA"
+      if (nrow(ru$coefficients) > 1) {
+        
       ruint <- round(ru$coefficients[1,1], digits = 6)                         #intercept 
       ruslope <- round(ru$coefficients[2,1], digits = 6)                       #slope of regression
       rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
@@ -101,17 +181,16 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-      admincode <-paste(Hydroid,"_fe_quantreg_ymax",sep="");
+      admincode <-paste(Hydroid,"_fe_quantreg_pwit",sep="");
       
+      # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {
-        # stash the regression
+        
         qd <- list(
           featureid = Hydroid,
           admincode = admincode,
-          name = paste( "Quantile Regression (Y-Max), ", y_metric, ' = f( ', x_metric, ' ), upper ',quantile * 100, '%', sep=''),
-          ftype = 'fe_quantreg_ymax',
-          #startdate = startdate,
-          #enddate = enddate,
+          name = paste( "Quantile Regression (Piecewise IT), ", y_metric, ' = f( ', x_metric, ' ), upper ',quantile * 100, '%', sep=''),
+          ftype = 'fe_quantreg_pwit',
           site = site,
           x = x_metric,
           y = y_metric,
@@ -128,19 +207,17 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
             station_agg =station_agg,
             sampres = sampres,
             stat_quantreg_bkpt = stat_quantreg_bkpt,
-            stat_quantreg_glo = 0, #Need to store 0 value in order to query using this property
-            stat_quantreg_ghi = 0, #Need to store 0 value in order to query using this property
+            stat_quantreg_glo= u_input_lo,
+            stat_quantreg_ghi = u_input_hi,
             analysis_timespan = analysis_timespan
-            
           )
         );
         print("Storing quantile regression.");
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
         #Plot images are stored using watershed hydrocode when NOT performing REST 
-        adminid <- paste(search_code,"fe_quantreg_ymax",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan, sep='_');
+        adminid <- paste(search_code,"fe_quantreg_pwit_RS",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,u_input_lo,u_input_hi, sep='_');
       }
-      
       
       #Display only 3 significant digits on plots
       plot_ruslope <- signif(ruslope, digits = 3)
@@ -150,7 +227,10 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       plot_rup <- signif(rup, digits = 3)
       
       #Plot titles
-      plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (breakpoint = ",round(breakpt, digits = 1),") - YMAX",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      #plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (breakpoint = ",round(breakpt, digits = 1),") - PWIT (",glo," < breakpoint < ",ghi,")",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      #plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",glo," < ",round(breakpt, digits = 1)," < ",ghi,") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",round(glo,1)," < breakpoint < ",round(ghi,1)," = ",round(breakpt, digits = 1),") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      
       xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$metric_value),sep="");
       yaxis_title <- paste(biometric_title);
       EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
@@ -161,7 +241,18 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       print (paste("Plotting ELF"));
       # START - plotting function
       plt <- ggplot(data, aes(x=attribute_value,y=metric_value)) + ylim(0,yaxis_thresh) + 
+        
+        #Full Dataset (Gray Points)
         geom_point(data = full_dataset,aes(colour="aliceblue")) +
+        
+        #RIGHT SIDE OF PIECEWISE 
+        geom_point(data = data_RS, show.legend = TRUE, colour = "blue")+
+        geom_point(data = upper.quant_RS, show.legend = TRUE, colour = "forestgreen")+
+        geom_quantile(data = data_RS, show.legend = TRUE,formula = y ~ x, quantiles = quantile, colour = "black")+
+        geom_smooth(data = data_RS, show.legend = TRUE,method = "lm", colour = "red", se = FALSE)+
+        geom_smooth(data = upper.quant_RS, show.legend = TRUE,method = "lm", formula = y ~ x, colour = "orange", se = FALSE)+
+        
+        #LEFT SIDE OF PIECEWISE 
         geom_point(data = data,aes(colour="blue")) + 
         stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=attribute_value,y=metric_value,color = "red")) +
         geom_point(data = upper.quant, aes(x=attribute_value,y=metric_value,color = "black")) + 
@@ -234,11 +325,27 @@ elf_ymax <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, 
       }   
       
     } else {
-      print(paste("... Skipping (fewer than 4 datapoints in upper quantile of ", search_code,")", sep=''));
+      print(paste("... Skipping (fewer than 4 datapoints in upper quantile to the left of x-axis breakpoint in ", search_code,")", sep=''));
     }   
     
   } else {
-    print(paste("... Skipping (fewer than 4 datapoints to the left of x-axis inflection point in ", search_code,")", sep=''));
+    print(paste("... Skipping (fewer than 4 datapoints to the left of x-axis breakpoint in ", search_code,")", sep=''));
   }   
+  
+  } else {
+    print(paste("... Skipping slope is 'NA' to the right of x-axis breakpoint in ", search_code,")", sep=''));
+  }  
+  
+  } else {
+    print(paste("... Skipping (fewer than 4 datapoints in upper quantile to the right of x-axis breakpoint in ", search_code,")", sep=''));
+  }   
+  
+  } else {
+    print(paste("... Skipping (fewer than 4 datapoints to the right of x-axis breakpoint in ", search_code,")", sep=''));
+  }
+  
+  } else {
+    print(paste("... Skipping (No breaks are found using this piece-wise method in ", search_code,")", sep=''));
+  }
   
 } #close function
