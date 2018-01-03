@@ -1,4 +1,5 @@
 library(httr);
+library(stringr);
 
 rest_token <- function(base_url, token, rest_uname = FALSE, rest_pw = FALSE){
   #Cross-site Request Forgery Protection (Token required for POST and PUT operations)
@@ -221,4 +222,22 @@ getFeature <- function(inputs, token, base_url, feature){
     print("This property does not exist")
   }
   feature <- feature
+}
+
+vahydro_fe_data <- function (Watershed_Hydrocode,x_metric_code,y_metric_code,bundle,ws_ftype_code,sampres, data) {
+
+  #note: add a 0 for the HUC6's or else the url doesn't work
+  if (ws_ftype_code == 'nhd_huc6') {
+    search_code <- str_pad(Watershed_Hydrocode, 6, "left", pad = "0");
+  }
+  if (ws_ftype_code == 'nhd_huc10') {
+    search_code <- str_pad(Watershed_Hydrocode, 10, "left", pad = "0");
+  }
+  
+  uri <- paste(
+    site,"export_fe_data_stripped",x_metric_code,y_metric_code,
+    bundle,ws_ftype_code,sampres,search_code,sep="/"
+  )
+  print(paste("Using ", uri, sep=''));
+  data <- read.csv(uri, header = TRUE, sep = ",")
 }
