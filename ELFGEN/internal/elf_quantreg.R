@@ -143,7 +143,7 @@ print("Storing quantile regression.");
                             enddate,"\n\nQuantile Regression: (breakpoint at DA = ", ghi, 
                             ' sqmi, ', round((ghi  * 2.58999),digits=0),' sqkm)',
                             sep="");
-            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,sep="");
+            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$metric_value),sep="");
             yaxis_title <- paste(biometric_title);
             EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
             Reg_upper_legend <- paste("Regression (Upper ",((1 - quantile)*100),"%)",sep="");       
