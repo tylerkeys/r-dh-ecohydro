@@ -11,14 +11,15 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 ##save_directory <- "C:\\Users\\nrf46657\\Desktop\\DEBUGS\\plots"  #Specify location for storing plot images locally
 
 #----FOR RUNNING FROM SERVER:
-fxn_locations <- "/var/www/R/r-dh-ecohydro/"
+fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/internal/"
 save_directory <- "/var/www/html/files/fe/plots"
+fxn_vahydro <- "/var/www/R/r-dh-ecohydro/Analysis/fn_vahydro-2.0/"  
 
 #retrieve rest token
-source(paste(fxn_locations,"elf_rest_token.R", sep = ""));     #loads function used to generate rest session token
-elf_rest_token (site, token)
-token <- elf_rest_token(site, token)
-#print(token)
+source(paste(fxn_vahydro,"rest_functions.R", sep = ""));
+source("./rest.private");
+token <- rest_token(site, token, rest_uname, rest_pw)
+print(token)
 
 #------------------------------------------------------------------------------------------------
 #User inputs 
@@ -32,7 +33,7 @@ inputs <- list(
   save_directory = save_directory, 
   x_metric = c(
     'nhdp_drainage_sqkm',
-    'erom_q0001e_mean'
+    'erom_q0001e_mean',
     'erom_q0001e_jan',
     'erom_q0001e_feb',
     'erom_q0001e_mar', 
@@ -52,7 +53,7 @@ inputs <- list(
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ),
-  y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
+  y_metric = 'aqbio_nt_benins',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   disabled_ws_ftype = c(
     'state',
     'hwi_region',
@@ -68,6 +69,8 @@ inputs <- list(
   target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
+  #analysis_timespan = '1990-2000',#used to subset data on date range 
+  analysis_timespan = 'full',      #used to plot for entire timespan 
   startdate = '1600-01-01',        #Leave at 1600-01-01 when batch processing to encompass all sample dates (different date-ranges can be used for later analyses)
   enddate = '2100-12-31',          #Leave at 2100-12-31 when batch processing to encompass all sample dates 
   send_to_rest = "YES",             #"YES" to set ELF stats as drupal submittal properties, "NO" otherwise
@@ -84,6 +87,7 @@ inputs <- list(
   quantreg = "YES",  #Plot using quantile regression method (YES or NO)
   ymax = "NO",      #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   pw_it = "YES",     #Plot using breakpoint determined by piecewise iterative function (YES or NO)
+  pw_it_RS = "YES",
   twopoint = "NO",    #Plot using basic two-point ELF method (YES or NO)
   glo = 1,  # Breakpoint flow (sqmi) lower boundary value for PWIT method
   ghi = 530, # breakpoint ymax DA (sqmi) upper boundary value for PWIT & Quantreg method
@@ -96,7 +100,7 @@ inputs <- list(
 
 #------------------------------------------------------------------------------------------------
 #Load Functions               
-source(paste(fxn_locations,"elf_retrieve_data.R", sep = ""));  #loads function used to retrieve F:E data from VAHydro
+source(paste(fxn_locations,"/elf_retrieve_data.R", sep = ""));  #loads function used to retrieve F:E data from VAHydro
 
 elf_retrieve_data (inputs) 
 

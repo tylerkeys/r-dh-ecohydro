@@ -227,6 +227,7 @@ getFeature <- function(inputs, token, base_url, feature){
 vahydro_fe_data <- function (Watershed_Hydrocode,x_metric_code,y_metric_code,bundle,ws_ftype_code,sampres, data) {
 
   #note: add a 0 for the HUC6's or else the url doesn't work
+  search_code <- Watershed_Hydrocode;
   if (ws_ftype_code == 'nhd_huc6') {
     search_code <- str_pad(Watershed_Hydrocode, 6, "left", pad = "0");
   }
