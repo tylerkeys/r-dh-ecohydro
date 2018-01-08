@@ -50,7 +50,7 @@ for (l in offset_ws_ftype:length(ws_ftype)) {
   }
   #Pull in full list of Virginia watersheds for the specified ftype
   #If we define a hydrocode > 'XXXXXX' it will retrieve that single one
-  HUClist_url_base <- paste(site,"/?q=export-regions/",bundle, sep = "");
+  HUClist_url_base <- paste(site,"/?q=elfgen_regions_export/",bundle, sep = "");
   if (!(target_hydrocode == '')) {
     HUClist_url_full <- paste(HUClist_url_base, ws_ftype[l], target_hydrocode, sep = "/");
   } else {
@@ -82,7 +82,7 @@ for (k in offset_y_metric:length(y_metric)) {
       );
       
       #makes sure all metric values are numeric and not factorial (fixes error with ni, total)
-      data$metric_value <- as.numeric(data$metric_value)
+      data$y_value <- as.numeric(data$y_value)
       #Subset by date range 
       data$tstime <- as.Date(data$tstime,origin="1970-01-01")
       
@@ -107,14 +107,14 @@ for (k in offset_y_metric:length(y_metric)) {
 
       #USE ONLY MAX NT VALUE FOR EACH STATION
       if(station_agg == "max"){ 
-        aa <- data[order(data$hydrocode, data$metric_value, decreasing=TRUE),]
+        aa <- data[order(data$hydrocode, data$y_value, decreasing=TRUE),]
         aa <- aa[!duplicated(aa$hydrocode),]
-        aa <- aa[order(aa$hydrocode, aa$metric_value),]
+        aa <- aa[order(aa$hydrocode, aa$y_value),]
         data <- aa
       }
       
       #subsets data to exclude anything with a flowmetric value greater than the "xaxis_thresh" specified in the user inputs file
-      data <- subset(data, attribute_value >= .001 & attribute_value < xaxis_thresh);
+      data <- subset(data, x_value >= .001 & x_value < xaxis_thresh);
       
       #Export data as spreadsheet
       ##write.table(data, paste(save_directory,"data.tsv",sep=""), sep="\t")
@@ -128,16 +128,16 @@ for (k in offset_y_metric:length(y_metric)) {
       
       
       #Skip if there is only 1 or 2 unique flow metric values for this watershed (either only a single EDAS station, or multiple with the same flow metric, which would result in a vertical bar of points in the plot)
-      station_attribute_value <- data$attribute_value
-      remove_da_duplicates <- unique(station_attribute_value, incomparables = FALSE)
+      station_x_value <- data$x_value
+      remove_da_duplicates <- unique(station_x_value, incomparables = FALSE)
       if(length(remove_da_duplicates) == 1 | length(remove_da_duplicates) == 2) {
         print(paste("... Skipping (the points are all organized in 1 or 2 vertical lines in ", Watershed_Hydrocode[i],")", sep=''));
         next 
       } #closes bar of points skip if-statement (rare)
       
       #Skip if there is only 1 or 2 unique biometric values for this watershed
-      station_metric_value <- data$metric_value
-      remove_metric_duplicates <- unique(station_metric_value, incomparables = FALSE)
+      station_y_value <- data$y_value
+      remove_metric_duplicates <- unique(station_y_value, incomparables = FALSE)
       if(length(remove_metric_duplicates) == 1 | length(remove_metric_duplicates) == 2) {
         print(paste("... Skipping (the points are all organized in 1 or 2 horizontal lines in ", Watershed_Hydrocode[i],")", sep=''));
         next 
