@@ -26,7 +26,8 @@ elf_retrieve_data <- function(inputs = list()){
   quantreg <- inputs$quantreg 
   ymax <- inputs$ymax   
   pw_it <- inputs$pw_it  
-  pw_it_RS <- inputs$pw_it_RS  
+  pw_it_RS <- inputs$pw_it_RS 
+  pw_it_RS_IFIM <- inputs$pw_it_RS_IFIM  
   twopoint <- inputs$twopoint
   token <- inputs$token
   DA_Flow <- inputs$DA_Flow
@@ -153,6 +154,8 @@ for (k in offset_y_metric:length(y_metric)) {
       source(paste(fxn_locations,"elf_pw_it_RS.R", sep = ""));       #loads ef_pw_it_RS function
       source(paste(fxn_locations,"elf_pct_chg.R", sep =""));         #loads percent change barplot function
       source(paste(fxn_locations,"elf_store_data.R", sep = ""));     #loads function used to store ELF stats to VAHydro
+      source(paste(fxn_locations,"elf_pw_it_RS_IFIM.R", sep = ""));     #loads function used to store ELF stats to VAHydro
+      
       
       if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep="")) 
                             elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
@@ -166,6 +169,9 @@ for (k in offset_y_metric:length(y_metric)) {
       if(pw_it_RS == "YES") {print(paste("PLOTTING - method quantreg breakpoint using piecewise function (Including regression to the right of breakpoint)...",sep=""))
                                       elf_pw_it_RS (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
 
+      if(pw_it_RS_IFIM == "YES") {print(paste("PLOTTING - method quantreg breakpoint using piecewise function (Including regression to the right of breakpoint)...",sep=""))
+                                      elf_pw_it_RS_IFIM (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
+      
         } #closes watershed for loop  
       } #closes x_metric for loop
     } #closes y_metric for loop

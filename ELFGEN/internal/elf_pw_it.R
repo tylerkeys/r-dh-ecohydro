@@ -77,6 +77,12 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   subset_n <- length(data$y_value)
   
   stat_quantreg_bkpt <-  breakpt
+  if(x_metric == "nhdp_drainage_sqkm") {
+    # convert the breakpoint found to sqmi from sqkm
+    stat_quantreg_bkpt <-  breakpt / 2.58999;
+  } else {
+    stat_quantreg_bkpt <-  breakpt;
+  }
   
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same x_value
   duplicates <- unique(data$x_value, incomparables = FALSE)

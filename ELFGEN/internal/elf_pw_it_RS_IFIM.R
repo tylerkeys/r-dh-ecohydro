@@ -7,7 +7,7 @@ library(httr);
 library(data.table);
 library(scales);
 
-elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
+elf_pw_it_RS_IFIM <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate){
   
   #Load inputs
   x_metric <- x_metric_code
@@ -31,6 +31,46 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   glo <- inputs$glo
   ghi <- inputs$ghi
   dataset_tag <- inputs$dataset_tag
+  
+  
+  #----------------------------------------------------------------
+  library(jsonlite)
+  
+  ifim_featureid <- '397299'
+  ifim_varkey <- 'ifim_habitat_table'
+  ifim_url <- paste(site,"dh-properties-json/dh_feature",ifim_featureid,ifim_varkey, sep="/")
+  
+  raw_data <- fromJSON(ifim_url)
+  prop_matrix_json <- raw_data$entity_properties$property$prop_matrix
+  json_file <- fromJSON(prop_matrix_json)
+
+  json_file <- lapply(json_file, function(x) {
+    x[sapply(x, is.null)] <- NA
+    unlist(x)
+  })
+  
+  ifim_dataframe <- do.call("rbind", json_file)
+ # ifim_dataframe <- as.numeric(ifim_dataframe)
+  ifim_dataframe <- data.frame(ifim_dataframe)
+  
+  ifim_dataframe$discharge <-as.numeric(as.character(ifim_dataframe$discharge))
+  ifim_dataframe$smb_sub_adult <-as.numeric(as.character(ifim_dataframe$smb_sub_adult))
+  
+  
+  ifim_transect <- "Lynwood"
+  wua_metric <- "smb_sub_adult"
+  
+  library(dplyr)
+  ifim_dataframe <- rename(ifim_dataframe, x_value=discharge, y_value=smb_sub_adult)
+  
+  #remove zero row to tidy up plot
+  ifim_dataframe <- ifim_dataframe[-1,]
+  
+  print(head(ifim_dataframe))
+  print(head(data))
+  
+  #----------------------------------------------------------------
+  
   
   full_dataset <- data
 
@@ -109,17 +149,9 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   
   data<-data[!(data$x_value > breakpt),]
   subset_n <- length(data$y_value)
-  
-  
-  
+ 
   stat_quantreg_bkpt <-  breakpt
-  if(x_metric == "nhdp_drainage_sqkm") {
-    # convert the breakpoint found to sqmi from sqkm
-    stat_quantreg_bkpt <-  breakpt / 2.58999;
-  } else {
-    stat_quantreg_bkpt <-  breakpt;
-  }
-  
+
   #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same x_value
   duplicates <- unique(data$x_value, incomparables = FALSE)
   if(nrow(data) && length(duplicates) > 3) {   
@@ -174,6 +206,7 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
 
       admincode <-paste(Hydroid,"_fe_quantreg_pwit",sep="");
       
+      send_to_rest <- "NO"
       # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {
         
@@ -220,7 +253,8 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       #Plot titles
       #plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (breakpoint = ",round(breakpt, digits = 1),") - PWIT (",glo," < breakpoint < ",ghi,")",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
       #plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",glo," < ",round(breakpt, digits = 1)," < ",ghi,") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
-      plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",round(glo,1)," < breakpoint < ",round(ghi,1)," = ",round(breakpt, digits = 1),") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",round(glo,1)," < breakpoint < ",round(ghi,1)," = ",round(breakpt, digits = 1),") - PWIT ","\n\nIFIM Transect: ",ifim_transect,"\nMetric: ",wua_metric,sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
+      
       
       xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$y_value),sep="");
       yaxis_title <- paste(biometric_title);
@@ -231,7 +265,7 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       
       print (paste("Plotting ELF"));
       # START - plotting function
-      plt <- ggplot(data, aes(x=x_value,y=y_value)) + ylim(0,yaxis_thresh) + 
+      plt <- ggplot(data, aes(x=x_value,y=y_value)) + #ylim(0,yaxis_thresh) + 
         
         #Full Dataset (Gray Points)
         geom_point(data = full_dataset,aes(colour="aliceblue")) +
@@ -251,6 +285,10 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
         geom_smooth(data = data, method="lm",formula=y ~ x,show.legend = TRUE, aes(colour="yellow"),se=FALSE) + 
         geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=x_value,y=y_value,color = "green"),se=FALSE) + 
         geom_vline(xintercept = breakpt[1],linetype = "longdash",colour = "black")+
+        geom_line(data = ifim_dataframe, aes(x = x_value, y = y_value/1000, colour = "red"),show.legend = FALSE)+
+        
+        scale_y_continuous(sec.axis = sec_axis(~.*1000, name = "WUA, ft^2/1000 ft"))+
+      
         ggtitle(plot_title) + 
         theme(
           plot.title = element_text(size = 12, face = "bold"),axis.text = element_text(colour = "blue")
