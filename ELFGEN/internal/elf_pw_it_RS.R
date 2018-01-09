@@ -172,7 +172,7 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-      admincode <-paste(Hydroid,"_fe_quantreg_pwit",sep="");
+      admincode <-paste(Hydroid,"_fe_quantreg_pwit_RS",sep="");
       
       # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {

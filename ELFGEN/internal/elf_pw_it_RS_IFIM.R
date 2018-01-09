@@ -204,7 +204,7 @@ elf_pw_it_RS_IFIM <- function(inputs, data, x_metric_code, y_metric_code, ws_fty
       flow_name <- metric_table[flow_row,]
       flow_title <- flow_name$varname                         #needed for human-readable plot titles
 
-      admincode <-paste(Hydroid,"_fe_quantreg_pwit",sep="");
+      admincode <-paste(Hydroid,"_fe_quantreg_pwit_RS_IFIM",sep="");
       
       send_to_rest <- "NO"
       # stash the regression statistics using REST  
@@ -240,7 +240,7 @@ elf_pw_it_RS_IFIM <- function(inputs, data, x_metric_code, y_metric_code, ws_fty
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
         #Plot images are stored using watershed hydrocode when NOT performing REST 
-        adminid <- paste(search_code,"fe_quantreg_pwit_RS",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,glo,ghi, sep='_');
+        adminid <- paste(search_code,"fe_quantreg_pwit_RS_IFIM",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,glo,ghi, sep='_');
       }
       
       #Display only 3 significant digits on plots
