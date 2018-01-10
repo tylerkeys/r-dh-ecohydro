@@ -5,3 +5,4 @@ Analysis - Analysis of ELF data, and also for interacting with the VAHydro model
 
 jdkleiner_ICTHY branch - code allows user to toggle datasource between ICTHY and EDAS 
 
+***REMEMEBR NOT TO PERFORM REST WHEN PLOTTING WITH ICTHY DATA 
