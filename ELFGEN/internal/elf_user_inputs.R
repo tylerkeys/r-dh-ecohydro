@@ -6,9 +6,9 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 #----------------------------------------------
 
 #----FOR RUNNING LOCALLY:
-fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\debugs_12.19.17\\"          #Specify location of supporting function .R files
-save_directory <- "C:\\Users\\nrf46657\\Desktop\\debugs_12.19.17\\plots"    #Specify location for storing plot images locally
-fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  
+fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\elf_icthy\\"          #Specify location of supporting function .R files
+save_directory <- "C:\\Users\\nrf46657\\Desktop\\elf_icthy\\plots"    #Specify location for storing plot images locally
+fxn_vahydro <- "C:\\Users\\nrf46657\\Desktop\\elf_icthy\\"  
 
 #----FOR RUNNING FROM SERVER:
 #fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/"
@@ -32,7 +32,7 @@ inputs <- list(
   pct_chg = 10,                             #Percent decrease in flow for barplots (keep at 10 for now)
   save_directory = save_directory, 
   not_x_metric = c(
-    'nhdp_drainage_sqkm',
+    'nhdp_drainage_sqmi',
     'erom_q0001e_mean',
     'erom_q0001e_jan',
     'erom_q0001e_feb',
@@ -47,9 +47,9 @@ inputs <- list(
     'erom_q0001e_nov',
     'erom_q0001e_dec'
   ),		
-  x_metric = 'erom_q0001e_mean', #Flow metric to be plotted on the x-axis
+  x_metric = 'nhdp_drainage_sqmi', #Flow metric to be plotted on the x-axis
   not_y_metric = c(
-               'nhdp_drainage_sqkm',
+               'nhdp_drainage_sqmi',
                'aqbio_nt_bival',
                'aqbio_nt_cypr_native'
               ), #this can be used to process by multiple biometrics at once 
@@ -65,8 +65,8 @@ inputs <- list(
     'ecoregion_iv',
     'ecoiii_huc6'
   ),#this can be used to process by multiple region types at once 
-  ws_ftype = c('state'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
-  target_hydrocode = 'usa_state_virginia',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
+  ws_ftype = c('hwi_region'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
+  target_hydrocode = 'ohio_river_basin_nhdplus',  #nhd_huc8_02070005         #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
   #analysis_timespan = '1990-2000',#used to subset data on date range 
@@ -83,17 +83,20 @@ inputs <- list(
                                    #   maj_fam...............majority family (Benthics only)
                                    #   maj_species...........majority species (Benthics only)
   
-  quantreg = "YES",   #Plot using quantile regression method (YES or NO)
+  quantreg = "NO",   #Plot using quantile regression method (YES or NO)
   pw_it = "YES",      #Plot using breakpoint determined by piecewise iterative function (YES or NO)
-  ymax = "YES",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
-  twopoint = "YES",   #Plot using basic two-point ELF method (YES or NO)
-  pw_it_RS = "YES",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
+  ymax = "NO",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
+  twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
+  pw_it_RS = "NO",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
+  
+  use_icthy_data = "YES", #Toggle "YES" to ulitize icthy dataset, otherwise "NO" to use EDAS 
+                          #(we will later update this to use the projname to switch between datasets)
+  
   glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
   ghi = 530, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
-  dataset_tag = 'ymax75', # unique indicator of a grouped dataset
   # full_ymax_da75
   # full_ymax_da530
   token = token

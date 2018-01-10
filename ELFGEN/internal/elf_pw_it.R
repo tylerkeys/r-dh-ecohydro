@@ -34,27 +34,18 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
   
   full_dataset <- data
   
-  #Statement to convert PWIT breakpoint boundaries for plotting against drainage area [convert cfs (which is roughly equal to mi^2) to km^2]
-  # store glo and ghi before converting for use in admincode/properties
-  u_input_lo = glo;
-  u_input_hi = ghi;
-  if(x_metric == "nhdp_drainage_sqkm") {
-    glo <- glo * 2.58999
-    ghi <- ghi * 2.58999
-  }
-  
   #must round these boundary values so they fit in admincode 
   glo <- round(glo,digits=0)
   ghi <- round(ghi,digits=0)
   
   #Creates subset of data consisting of only the upper x% of the datapoints
   ##The piecewise function then looks for a breakpoint between the user specified bounding values using only these upper points 
-  upper_points <- rq(metric_value ~ log(attribute_value),data = full_dataset, tau = quantile)
-  upper_points_newy <- c(log(full_dataset$attribute_value)*coef(upper_points)[2]+coef(upper_points)[1])
-  upper_points <- subset(full_dataset, full_dataset$metric_value > upper_points_newy)
+  upper_points <- rq(y_value ~ log(x_value),data = full_dataset, tau = quantile)
+  upper_points_newy <- c(log(full_dataset$x_value)*coef(upper_points)[2]+coef(upper_points)[1])
+  upper_points <- subset(full_dataset, full_dataset$y_value > upper_points_newy)
  
-  x <- upper_points$attribute_value
-  y <- upper_points$metric_value
+  x <- upper_points$x_value
+  y <- upper_points$y_value
   
   #set initial guess range
   breaks <- x[which(x >= glo & x <= ghi)]
@@ -82,8 +73,8 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
     breakpt <- breakpt[1]
     } #end of breaks == 1 loop 
     
-  data<-data[!(data$attribute_value >  breakpt),]
-  subset_n <- length(data$metric_value)
+  data<-data[!(data$x_value >  breakpt),]
+  subset_n <- length(data$y_value)
   
   stat_quantreg_bkpt <-  breakpt
   if(x_metric == "nhdp_drainage_sqkm") {
@@ -93,19 +84,19 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
     stat_quantreg_bkpt <-  breakpt;
   }
   
-  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
-  duplicates <- unique(data$attribute_value, incomparables = FALSE)
+  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same x_value
+  duplicates <- unique(data$x_value, incomparables = FALSE)
   if(nrow(data) && length(duplicates) > 3) {   
 
-    up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
-    newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
-    upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
+    up90 <- rq(y_value ~ log(x_value),data = data, tau = quantile) #calculate the quantile regression
+    newy <- c(log(data$x_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
+    upper.quant <- subset(data, data$y_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
     
     print(paste("Upper quantile has ", nrow(upper.quant), "values"));
     #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
     if (nrow(upper.quant) > 3) {
       
-      regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
+      regupper <- lm(y_value ~ log(x_value),data = upper.quant)  
       ru <- summary(regupper)                                                  #regression for upper quantile
 
       #If statement needed in case slope is "NA"
@@ -116,21 +107,21 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
       rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
       rursadj <- round(ru$adj.r.squared, digits = 6)                           #adjusted r squared of upper quantile
       rup <- round(ru$coefficients[2,4], digits = 6)                           #p-value of upper quantile
-      rucor <-round(cor.test(log(upper.quant$attribute_value),upper.quant$metric_value)$estimate, digits = 6) #correlation coefficient of upper quantile
-      rucount <- length(upper.quant$metric_value)
-      regfull <- lm(metric_value ~ log(attribute_value),data = data)            
+      rucor <-round(cor.test(log(upper.quant$x_value),upper.quant$y_value)$estimate, digits = 6) #correlation coefficient of upper quantile
+      rucount <- length(upper.quant$y_value)
+      regfull <- lm(y_value ~ log(x_value),data = data)            
       rf <- summary(regfull)                                                   #regression for full dataset
       rfint <- round(rf$coefficients[1,2], digits = 6)                         #intercept 
       rfslope <- round(rf$coefficients[2,1], digits = 6)                       #slope of regression
       rfrs <- round(rf$r.squared, digits = 6)                                  #r squared of full dataset linear regression
       rfp <- round(rf$coefficients[2,4], digits = 6)                           #p-value of full dataset
-      rfcor <- round(cor.test(log(data$attribute_value),data$metric_value)$estimate, digits = 6) #correlation coefficient of full dataset
-      rfcount <- length(data$metric_value) 
+      rfcor <- round(cor.test(log(data$x_value),data$y_value)$estimate, digits = 6) #correlation coefficient of full dataset
+      rfcount <- length(data$y_value) 
       
       #Set yaxis threshold = to maximum biometric value in database 
-      yaxis_thresh <- paste(site,"/femetric-ymax/",y_metric, sep="")
+      yaxis_thresh <- paste(site,"/elfgen_maxy_export/",y_metric, sep="")
       yaxis_thresh <- read.csv(yaxis_thresh , header = TRUE, sep = ",")
-      yaxis_thresh <- yaxis_thresh$metric_value
+      yaxis_thresh <- yaxis_thresh$y_value
       print (paste("Setting ymax = ", yaxis_thresh));
       
       #retreive metric varids and varnames
@@ -171,8 +162,8 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
             station_agg =station_agg,
             sampres = sampres,
             stat_quantreg_bkpt = stat_quantreg_bkpt,
-            stat_quantreg_glo= u_input_lo,
-            stat_quantreg_ghi = u_input_hi,
+            stat_quantreg_glo= glo,
+            stat_quantreg_ghi = ghi,
             analysis_timespan = analysis_timespan
           )
         );
@@ -180,7 +171,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
         #Plot images are stored using watershed hydrocode when NOT performing REST 
-        adminid <- paste(search_code,"fe_quantreg_pwit",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,u_input_lo,u_input_hi, sep='_');
+        adminid <- paste(search_code,"fe_quantreg_pwit",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,glo,ghi, sep='_');
       }
       
       #Display only 3 significant digits on plots
@@ -195,7 +186,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
       #plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",glo," < ",round(breakpt, digits = 1)," < ",ghi,") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
       plot_title <- paste(Feature.Name," (",sampres," grouping)\n",startdate," to ",enddate,"\n\nQuantile Regression: (",round(glo,1)," < breakpoint < ",round(ghi,1)," = ",round(breakpt, digits = 1),") - PWIT ",sep=""); #,"\n","\n",search_code,"  (",y_metric,")  vs  (",x_metric,")","\n",sep="");
       
-      xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$metric_value),sep="");
+      xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$y_value),sep="");
       yaxis_title <- paste(biometric_title);
       EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
       Reg_upper_legend <- paste("Regression (Upper ",((1 - quantile)*100),"%)",sep="");       
@@ -204,14 +195,14 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
       
       print (paste("Plotting ELF"));
       # START - plotting function
-      plt <- ggplot(data, aes(x=attribute_value,y=metric_value)) + ylim(0,yaxis_thresh) + 
+      plt <- ggplot(data, aes(x=x_value,y=y_value)) + ylim(0,yaxis_thresh) + 
         geom_point(data = full_dataset,aes(colour="aliceblue")) +
         geom_point(data = data,aes(colour="blue")) + 
-        stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=attribute_value,y=metric_value,color = "red")) +
-        geom_point(data = upper.quant, aes(x=attribute_value,y=metric_value,color = "black")) + 
+        stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=x_value,y=y_value,color = "red")) +
+        geom_point(data = upper.quant, aes(x=x_value,y=y_value,color = "black")) + 
         geom_quantile(data = data, quantiles= quantile,show.legend = TRUE,aes(color="red")) + 
         geom_smooth(data = data, method="lm",formula=y ~ x,show.legend = TRUE, aes(colour="yellow"),se=FALSE) + 
-        geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=attribute_value,y=metric_value,color = "green"),se=FALSE) + 
+        geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=x_value,y=y_value,color = "green"),se=FALSE) + 
         geom_vline(xintercept = breakpt[1],linetype = "longdash",colour = "black")+
         ggtitle(plot_title) + 
         theme(
