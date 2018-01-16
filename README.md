@@ -2,6 +2,3 @@ This Repo Houses a set of R scirpts for generating and storing ELFs in VAHydro, 
 
 ELFGen - Routines for creating ELFs
 Analysis - Analysis of ELF data, and also for interacting with the VAHydro modeling system.
-
-JDKLEINER BRANCH TEST
-

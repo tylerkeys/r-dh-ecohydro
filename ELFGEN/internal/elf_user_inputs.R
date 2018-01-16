@@ -8,11 +8,11 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 #----FOR RUNNING LOCALLY:
 #Specify location for storing plot images locally
 fxn_locations <- "D:\\Jkrstolic\\R\\deqEcoflows\\GitHub\\r-dh-ecohydro\\ELFGEN\\internal\\"  
-save_directory <- "D:\\Jkrstolic\\R\\deqEcoflows\\Breakpoints\\ELFs_PlotsReview\\TestDA\\"
+save_directory <- "D:\\Jkrstolic\\R\\deqEcoflows\\Breakpoints\\ELFs_PlotsReview\\BreakPointCompare\\"
 
 #fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\debugs_12.19.17\\"          #Specify location of supporting function .R files
 #save_directory <- "C:\\Users\\nrf46657\\Desktop\\debugs_12.19.17\\plots"    #Specify location for storing plot images locally
-#fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  
+fxn_vahydro <- "D:\\Jkrstolic\\R\\deqEcoflows\\GitHub\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\" 
 
 
 #----FOR RUNNING FROM SERVER:
@@ -93,10 +93,11 @@ inputs <- list(
   quantreg = "YES",   #Plot using quantile regression method (YES or NO)
   pw_it = "YES",      #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   ymax = "YES",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
-  twopoint = "YES",   #Plot using basic two-point ELF method (YES or NO)
+  twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
   pw_it_RS = "YES",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
-  glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
-  ghi = 530, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
+  DA_Flow = "NO",    # Plot the drainage area and flow together to discern any modeling issues. 
+  glo = 72,   # PWIT Breakpoint lower guess (sqmi/cfs)
+  ghi = 1500, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
