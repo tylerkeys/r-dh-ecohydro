@@ -179,6 +179,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
         print("Storing quantile regression.");
         adminid <- elf_store_data(qd, token, inputs, adminid)
       } else {
+        print("NOT Storing quantile regression.");
         #Plot images are stored using watershed hydrocode when NOT performing REST 
         adminid <- paste(search_code,"fe_quantreg_pwit",x_metric,y_metric,quantile,station_agg,sampres,analysis_timespan,u_input_lo,u_input_hi, sep='_');
       }
