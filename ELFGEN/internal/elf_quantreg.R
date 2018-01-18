@@ -28,27 +28,26 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   sampres <- inputs$sampres
   ghi <- inputs$ghi
 
+  #Retain a copy of the full dataset in order to include grey points on plot
   full_dataset <- data
   
-  #Convert ghi input from sqmi to sqkm, and remove datapoints greater than the ghi DA threashold
-  data<-data[!(data$drainage_area > (ghi * 2.58999)),]
-  subset_n <- length(data$metric_value)
-  # do not convert ghi here since we want to store breakpoint as sqmi not sqkm
-  stat_quantreg_bkpt <- ghi
+  #remove datapoints greater than the ghi DA threashold
+  data<-data[!(data$drainage_area_sqmi > (ghi)),]
+  subset_n <- length(data$y_value)
 
-  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same attribute_value
-  duplicates <- unique(data$attribute_value, incomparables = FALSE)
+  #If statement needed in case there are fewer than 4 datapoints to the left of x-axis inflection point, or if there are more than 3 points but all have the same x_value
+  duplicates <- unique(data$x_value, incomparables = FALSE)
   if(nrow(data) && length(duplicates) > 3) {  
     
-          up90 <- rq(metric_value ~ log(attribute_value),data = data, tau = quantile) #calculate the quantile regression
-          newy <- c(log(data$attribute_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
-          upper.quant <- subset(data, data$metric_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
+          up90 <- rq(y_value ~ log(x_value),data = data, tau = quantile) #calculate the quantile regression
+          newy <- c(log(data$x_value)*coef(up90)[2]+coef(up90)[1])            #find the upper quantile values of y for each value of DA based on the quantile regression
+          upper.quant <- subset(data, data$y_value > newy)                        #create a subset of the data that only includes the stations with NT values higher than the y values just calculated
           
 print(paste("Upper quantile has ", nrow(upper.quant), "values"));
           #If statement needed in case there ae fewer than 4 datapoints in upper quantile of data set
           if (nrow(upper.quant) > 3) {
 
-            regupper <- lm(metric_value ~ log(attribute_value),data = upper.quant)  
+            regupper <- lm(y_value ~ log(x_value),data = upper.quant)  
             ru <- summary(regupper)                                                  #regression for upper quantile
             #print(ru)
             #print(ru$coefficients)
@@ -62,21 +61,21 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
             rurs <- round(ru$r.squared, digits = 6)                                  #r squared of upper quantile
             rursadj <- round(ru$adj.r.squared, digits = 6)                           #adjusted r squared of upper quantile
             rup <- round(ru$coefficients[2,4], digits = 6)                           #p-value of upper quantile
-            rucor <-round(cor.test(log(upper.quant$attribute_value),upper.quant$metric_value)$estimate, digits = 6) #correlation coefficient of upper quantile
-            rucount <- length(upper.quant$metric_value)
-            regfull <- lm(metric_value ~ log(attribute_value),data = data)            
+            rucor <-round(cor.test(log(upper.quant$x_value),upper.quant$y_value)$estimate, digits = 6) #correlation coefficient of upper quantile
+            rucount <- length(upper.quant$y_value)
+            regfull <- lm(y_value ~ log(x_value),data = data)            
             rf <- summary(regfull)                                                   #regression for full dataset
             rfint <- round(rf$coefficients[1,2], digits = 6)                         #intercept 
             rfslope <- round(rf$coefficients[2,1], digits = 6)                       #slope of regression
             rfrs <- round(rf$r.squared, digits = 6)                                  #r squared of full dataset linear regression
             rfp <- round(rf$coefficients[2,4], digits = 6)                           #p-value of full dataset
-            rfcor <- round(cor.test(log(data$attribute_value),data$metric_value)$estimate, digits = 6) #correlation coefficient of full dataset
-            rfcount <- length(data$metric_value) 
+            rfcor <- round(cor.test(log(data$x_value),data$y_value)$estimate, digits = 6) #correlation coefficient of full dataset
+            rfcount <- length(data$y_value) 
             
             #Set yaxis threshold = to maximum biometric value in database 
-            yaxis_thresh <- paste(site,"/femetric-ymax/",y_metric, sep="")
+            yaxis_thresh <- paste(site,"/elfgen_maxy_export/",y_metric, sep="")
             yaxis_thresh <- read.csv(yaxis_thresh , header = TRUE, sep = ",")
-            yaxis_thresh <- yaxis_thresh$metric_value
+            yaxis_thresh <- yaxis_thresh$y_value
             print (paste("Setting ymax = ", yaxis_thresh));
 
             #retreive metric varids and varnames
@@ -93,6 +92,8 @@ print(paste("Upper quantile has ", nrow(upper.quant), "values"));
 
 admincode <-paste(Hydroid,"_fe_quantreg",sep="");
 #admincode <-paste("Joey_test_5",sep="");
+
+print(token)
 
         # stash the regression statistics using REST  
            if (send_to_rest == 'YES') {
@@ -117,7 +118,7 @@ admincode <-paste(Hydroid,"_fe_quantreg",sep="");
                 stat_quantreg_y = y_metric,
                 station_agg =station_agg,
                 sampres = sampres,
-                stat_quantreg_bkpt = stat_quantreg_bkpt,
+                stat_quantreg_bkpt = ghi,
                 stat_quantreg_glo = 0,
                 stat_quantreg_ghi = ghi,
                 analysis_timespan = analysis_timespan
@@ -139,11 +140,11 @@ print("Storing quantile regression.");
 
             #Plot titles
             plot_title <- paste(Feature.Name," (",sampres," grouping)\n",
-                            startdate," to ",
-                            enddate,"\n\nQuantile Regression: (breakpoint at DA = ", ghi, 
-                            ' sqmi, ', round((ghi  * 2.58999),digits=0),' sqkm)',
-                            sep="");
-            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$metric_value),sep="");
+                                startdate," to ",
+                                enddate,"\n\nQuantile Regression: (breakpoint at DA = ", ghi, 
+                                ' sqmi)',
+                                sep="");
+            xaxis_title <- paste(flow_title,"\n","\n","m: ",plot_ruslope,"    b: ",plot_ruint,"    r^2: ",plot_rurs,"    adj r^2: ",plot_rursadj,"    p: ",plot_rup,"\n","    Upper ",((1 - quantile)*100),"% n: ",rucount,"    Data Subset n: ",subset_n,"    Full Dataset n: ",length(full_dataset$y_value),sep="");
             yaxis_title <- paste(biometric_title);
             EDAS_upper_legend <- paste("Data Subset (Upper ",((1 - quantile)*100),"%)",sep="");
             Reg_upper_legend <- paste("Regression (Upper ",((1 - quantile)*100),"%)",sep="");       
@@ -152,14 +153,14 @@ print("Storing quantile regression.");
 
 print (paste("Plotting ELF"));
             # START - plotting function
-            plt <- ggplot(data, aes(x=attribute_value,y=metric_value)) + ylim(0,yaxis_thresh) + 
+            plt <- ggplot(data, aes(x=x_value,y=y_value)) + ylim(0,yaxis_thresh) + 
               geom_point(data = full_dataset,aes(colour="aliceblue")) +
               geom_point(data = data,aes(colour="blue")) + 
-              stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=attribute_value,y=metric_value,color = "red")) +
-              geom_point(data = upper.quant, aes(x=attribute_value,y=metric_value,color = "black")) + 
+              stat_smooth(method = "lm",fullrange=FALSE,level = .95, data = upper.quant, aes(x=x_value,y=y_value,color = "red")) +
+              geom_point(data = upper.quant, aes(x=x_value,y=y_value,color = "black")) + 
               geom_quantile(data = data, quantiles= quantile,show.legend = TRUE,aes(color="red")) + 
               geom_smooth(data = data, method="lm",formula=y ~ x,show.legend = TRUE, aes(colour="yellow"),se=FALSE) + 
-              geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=attribute_value,y=metric_value,color = "green"),se=FALSE) + 
+              geom_smooth(data = upper.quant, formula = y ~ x, method = "lm", show.legend = TRUE, aes(x=x_value,y=y_value,color = "green"),se=FALSE) + 
               ggtitle(plot_title) + 
               theme(
                 plot.title = element_text(size = 12, face = "bold"),axis.text = element_text(colour = "blue")

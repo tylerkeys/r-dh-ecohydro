@@ -29,15 +29,15 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   
   full_dataset <- data
 
-  x <- data$attribute_value
-  y <- data$metric_value
+  x <- data$x_value
+  y <- data$y_value
   
   ymax <- max(y) #finds the max y-value
   xmin <- min(x) #finds the minimum x-value
-  x.ymax <- subset(data, data$metric_value == ymax) #finds all the x-values associated with that max y-value
-  xmin.ymax <- min(x.ymax$attribute_value) #finds the point with the smallest x-value associated with that max y-value
-  y.xmin <- subset(data, data$attribute_value == xmin) #finds all the y-values associated with the minimum x-value
-  ymax.xmin <- max(y.xmin$metric_value) #finds the point with the highest x-value associated with that min x-value
+  x.ymax <- subset(data, data$y_value == ymax) #finds all the x-values associated with that max y-value
+  xmin.ymax <- min(x.ymax$x_value) #finds the point with the smallest x-value associated with that max y-value
+  y.xmin <- subset(data, data$x_value == xmin) #finds all the y-values associated with the minimum x-value
+  ymax.xmin <- max(y.xmin$y_value) #finds the point with the highest x-value associated with that min x-value
   
   #This is necessary in case the two points are in the same spot 
   if(xmin != xmin.ymax) {
@@ -50,12 +50,12 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
     #print (rl)
     ruint <- round(rl$coefficients[1,1], digits = 6) #intercept 
     ruslope <- round(rl$coefficients[2,1], digits = 6) #slope of regression
-    rucount <- length(data$metric_value)
+    rucount <- length(data$y_value)
 
       #Set yaxis threshold = to maximum biometric value in database 
-      yaxis_thresh <- paste(site,"/femetric-ymax/",y_metric, sep="")
+      yaxis_thresh <- paste(site,"/elfgen_maxy_export/",y_metric, sep="")
       yaxis_thresh <- read.csv(yaxis_thresh , header = TRUE, sep = ",")
-      yaxis_thresh <- yaxis_thresh$metric_value
+      yaxis_thresh <- yaxis_thresh$y_value
       print (paste("Setting ymax = ", yaxis_thresh));
       
       #retreive metric varids and varnames
@@ -72,10 +72,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
 
       #admincode <- paste(Hydroid,"twopoint",x_metric_varid,y_metric_varid,"-9999",statagg,smprs,startdate,enddate, sep='_');
       admincode <-paste(Hydroid,"_fe_twopoint",sep="");
-      
-      #Store breakpoint in sqmi if plotting for drainage area 
-      if (x_metric == 'nhdp_drainage_sqkm') {xmin.ymax <- (xmin.ymax / 2.58999)}
-      
+
       # stash the regression statistics using REST  
       if (send_to_rest == 'YES') {
         
@@ -125,7 +122,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
       # START - plotting function
       ggplot()+
         ylim(0,yaxis_thresh)+
-        geom_point(data = data, aes(x=attribute_value, y=metric_value,colour="blue"))+
+        geom_point(data = data, aes(x=x_value, y=y_value,colour="blue"))+
         geom_smooth(data = twopt, method = "lm", se = FALSE, aes(x=V1,y=V2,colour="red"))+
         ggtitle(plot_title)+
         theme(plot.title = element_text(size = 12, face = "bold"),axis.text = element_text(colour = "blue"))+

@@ -236,7 +236,7 @@ vahydro_fe_data <- function (Watershed_Hydrocode,x_metric_code,y_metric_code,bun
   }
   
   uri <- paste(
-    site,"export_fe_data_stripped",x_metric_code,y_metric_code,
+    site,"elfgen_data_export",x_metric_code,y_metric_code,
     bundle,ws_ftype_code,sampres,search_code,sep="/"
   )
   print(paste("Using ", uri, sep=''));
