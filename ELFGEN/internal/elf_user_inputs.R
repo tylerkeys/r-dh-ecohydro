@@ -57,7 +57,8 @@ inputs <- list(
   not_y_metric = c(
                'nhdp_drainage_sqkm',
                'aqbio_nt_bival',
-               'aqbio_nt_cypr_native'
+               'aqbio_nt_cypr_native', 
+               'aqbio_benthic_nt_total'
               ), #this can be used to process by multiple biometrics at once 
   y_metric = 'aqbio_nt_total',	   #Biometric to be plotted on the y-axis, see "dh variable key" column for options: https://docs.google.com/spreadsheets/d/1PnxY4Rxfk9hkuaXy7tv8yl-mPyJuHdQhrOUWx_E1Y_w/edit#gid=0
   not_ws_ftype = c(
@@ -73,13 +74,13 @@ inputs <- list(
   ),#this can be used to process by multiple region types at once 
 
   ws_ftype = c('nhd_huc6'),		     #Options: state, hwi_region, nhd_huc8, nhd_huc6, ecoregion_iii, ecoregion_iv, ecoiii_huc6
-  target_hydrocode = '',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
+  target_hydrocode = '020700',           #Leave blank to process all, individual examples: usa_state_virginia for all of VA, atl_non_coastal_plain_usgs,ohio_river_basin_nhdplus,nhd_huc8_05050001...
   quantile = .80,                  #Specify the quantile to use for quantile regresion plots 
   xaxis_thresh = 15000,            #Leave at 15000 so all plots have idential axis limits 
   #analysis_timespan = '1990-2000',#used to subset data on date range 
   analysis_timespan = 'full',      #used to plot for entire timespan 
 
-  send_to_rest = "NO",            #"YES" to push ELF statistic outputs to VAHydro
+  send_to_rest = "YES",            #"YES" to push ELF statistic outputs to VAHydro
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
   sampres = 'species',                  
   #sampres = 'maj_fam_gen_spec',                  
@@ -94,10 +95,10 @@ inputs <- list(
   pw_it = "YES",      #Plot using breakpoint determined by piecewise iterative function (YES or NO)
   ymax = "YES",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
-  pw_it_RS = "YES",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
-  DA_Flow = "NO",    # Plot the drainage area and flow together to discern any modeling issues. 
-  glo = 72,   # PWIT Breakpoint lower guess (sqmi/cfs)
-  ghi = 1500, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
+  pw_it_RS = "NO",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
+  DA_Flow = "YES",    # Plot the drainage area and flow together to discern any modeling issues. 
+  glo = 290,   # PWIT Breakpoint lower guess (sqmi/cfs)
+  ghi = 306, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
