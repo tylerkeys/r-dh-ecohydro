@@ -29,7 +29,7 @@ elf_retrieve_data <- function(inputs = list()){
   pw_it_RS <- inputs$pw_it_RS  
   twopoint <- inputs$twopoint
   token <- inputs$token
-  DA_Flow <- inputs$DA_Flow
+ # DA_Flow <- inputs$DA_Flow
 
 for (l in offset_ws_ftype:length(ws_ftype)) {
      
@@ -153,7 +153,7 @@ for (k in offset_y_metric:length(y_metric)) {
       source(paste(fxn_locations,"elf_pw_it_RS.R", sep = ""));       #loads ef_pw_it_RS function
       source(paste(fxn_locations,"elf_pct_chg.R", sep =""));         #loads percent change barplot function
       source(paste(fxn_locations,"elf_store_data.R", sep = ""));     #loads function used to store ELF stats to VAHydro
-     #source(paste(fxn_locations,"DA_Flow.R", sep = ""));            #loads function used to plot DA and Flow
+      #source(paste(fxn_locations,"elf_DA_Flow.R", sep = ""));            #loads function used to plot DA and Flow
       
       if(quantreg == "YES") {print(paste("PLOTTING - method quantreg breakpoint ...",sep="")) 
                             elf_quantreg (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
@@ -164,7 +164,7 @@ for (k in offset_y_metric:length(y_metric)) {
       if(twopoint == "YES") {print(paste("PLOTTING - method two-point function...",sep=""))
                             elf_twopoint (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       #if(DA_Flow == "YES")  {print(paste("PLOTTING - method DA_Flow function...",sep=""))
-      #                      DA_Flow (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
+      #                      elf_DA_Flow (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
       if(pw_it_RS == "YES") {print(paste("PLOTTING - method quantreg breakpoint using piecewise function (Including regression to the right of breakpoint)...",sep=""))
                              elf_pw_it_RS (inputs, data, x_metric_code, y_metric_code, ws_ftype_code, Feature.Name_code, Hydroid_code, search_code, token, startdate, enddate)}
         } #closes watershed for loop  
