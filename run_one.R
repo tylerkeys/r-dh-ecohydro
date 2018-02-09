@@ -13,9 +13,7 @@ library(scales);
 site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d.bet OR d.dh
 #----------------------------------------------
 #----FOR RUNNING LOCALLY:
-fxn_locations <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\";
-save_directory <- "C:\\Workspace\\tmp\\";
-fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  
+source("config.local.private");
 source(paste(fxn_vahydro,"rest_functions.R", sep = ""));
 source(paste(fxn_locations,"rest.private", sep=""));
 source(paste(fxn_locations,"ELFGEN\\internal\\elf_pw_it.R", sep = ""));
@@ -43,7 +41,7 @@ inputs <- list(
 );
 
 mydata <- vahydro_fe_data(
-  '020802', "erom_q0001e_mar", "aqbio_nt_total", 
+  '030101', "erom_q0001e_mean", "aqbio_nt_total", 
   'watershed',  "nhd_huc6", "species"
 );
 inputs$ghi <- max(mydata$attribute_value);
