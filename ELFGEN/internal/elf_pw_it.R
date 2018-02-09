@@ -63,7 +63,7 @@ elf_pw_it <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_code,
     mse <- as.numeric(length(breaks))
 
     for(n in 1:length(breaks)){
-      piecewise1 <- lm(y ~ x*(x < breaks[n]) + x*(x >= breaks[n]))
+      piecewise1 <- lm(y ~ log(x)*(x < breaks[n]) + log(x)*(x >= breaks[n]))
       mse[n] <- summary(piecewise1)[6]
     }
     mse <- as.numeric(mse)
