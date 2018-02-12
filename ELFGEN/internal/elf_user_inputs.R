@@ -93,9 +93,8 @@ inputs <- list(
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
-  # full_ymax_da75
-  # full_ymax_da530
-  token = token
+  token = token,
+  dataset_tag = ""
 ) 
 
 #------------------------------------------------------------------------------------------------

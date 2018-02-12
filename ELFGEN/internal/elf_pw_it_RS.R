@@ -192,7 +192,8 @@ elf_pw_it_RS <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
             stat_quantreg_bkpt = stat_quantreg_bkpt,
             stat_quantreg_glo= glo,
             stat_quantreg_ghi = ghi,
-            analysis_timespan = analysis_timespan
+            analysis_timespan = analysis_timespan,
+            dataset_tag = dataset_tag
           )
         );
         print("Storing quantile regression.");

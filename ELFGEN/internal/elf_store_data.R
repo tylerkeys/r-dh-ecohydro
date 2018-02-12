@@ -82,7 +82,8 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
     'stat_quantreg_bkpt',
     'stat_quantreg_glo',
     'stat_quantreg_ghi',
-    'analysis_timespan'
+    'analysis_timespan',
+    'dataset_tag'
   );
   proplist <- list(
     stat_quantreg_m = FALSE,
@@ -99,7 +100,8 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
     stat_quantreg_bkpt = FALSE,
     stat_quantreg_glo = FALSE,
     stat_quantreg_ghi = FALSE,
-    analysis_timespan = FALSE
+    analysis_timespan = FALSE,
+    dataset_tag = FALSE
   );
 
 #print (propdef_url);
@@ -160,7 +162,7 @@ elf_store_data <- function(qd = list(), token = '', inputs = list(), adminid) {
       propvalue = pf$propvalue,
       propcode = NULL
     );
-    if ( (varkey == 'stat_quantreg_x') || (varkey == 'stat_quantreg_y')|| (varkey == 'sampres')|| (varkey == 'station_agg')|| (varkey == 'analysis_timespan') ) {
+    if ( (varkey == 'stat_quantreg_x') || (varkey == 'stat_quantreg_y')|| (varkey == 'sampres')|| (varkey == 'station_agg')|| (varkey == 'analysis_timespan')|| (varkey == 'dataset_tag') ) {
       pbody$propcode = pf$propvalue;
       pbody$propvalue = NULL;
     }
