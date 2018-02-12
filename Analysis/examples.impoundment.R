@@ -15,14 +15,22 @@ library(hydroTSM);
 #elid = 339865; # Frederick Co pump-store
 #elid = 209793; # Bath Co
 #elid = 252285; # Smith River Martinsville
-elid = 340241; # Difficult Run - Pond 2, Copy 1
-runid = 998;
+elid = 339991; 
+# Difficult Run - 339991 
+# * Pond 2 - 340073 - 
+# * Martins Lake - 340114 - 0.5 sqmi
+# * Lake Audubon - 340098 - 0.1 / 2.37 sqmi
+# ** Lake Thoreau - 340116 - 0.57 - 2.37
+# ** NOTE: Audubon & THoreau both report 2.37 sqmi
+#    but only sum to 0.67 SQMI, so, -1.6 s- qmi DA
+# * Lake Fairfax - 340106 - 2.89 / 4.22 sqmi
+runid = 232018;
 # get a single variable in a timeseries summarized by day, keyed by thisdate
 #elevs <- fn_get_rundata(elid, runid, "impoundment_lake_elev");
 #plot(elevs);
 # get all data from the run file, keyed by timestamp (at whatever timestep model is run)
 dat <- fn_get_runfile(elid, runid);
-plot(dat$Qout,ylim=c(0,10000))
+plot(dat$Qout,ylim=c(0,100))
 #fdc(dat$Qout, main="Flow Duration", log='', xlab="Flow Exceedence",
 #    ylab="Q cfs", verbose=FALSE);
 
@@ -41,7 +49,7 @@ plot(dat$impoundment_lake_elev, ylim = c(0.0, 10.0));
 plot(dat$impoundment_Qin, ylim = c(0.0, 10.0));
 points(dat$impoundment_Qout);
 
-wudat <- window(dat, start = as.Date("1997-04-15"), end = as.Date("1997-05-17"));
+wudat <- window(dat, start = as.Date("1997-04-27"), end = as.Date("1997-05-02"));
 plot(wudat$impoundment_Qin,ylim=c(0,3))
 points(wudat$impoundment_Qout);
 

@@ -10,13 +10,13 @@ fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"query_elf_statistics.R", sep = "/")); 
 
 bundle <- 'watershed';
-ftype <- 'nhd_huc8';
-metric <- 'aqbio_nt_total';
+ftype <- 'nhd_huc6';
+metric <- 'aqbio_nt_cypr_native';
 q_ftype <- "fe_quantreg";
 analysis_timespan = "full";
 sampres = "species";
 selected <- 'all'; # all or hydrocode
-quantile <- 0.8;
+quantile <- 0.9;
 stat_quantreg_glo <- 0; # use 1 for pwit, 0 for quantreg
 # ftype = fe_quantreg, fe_quantreg_pwit, fe_quantreg_ymax, fe_twopoint
 # analysis_timespan = full, 1990-2010, 1970-1980, ...
@@ -29,7 +29,8 @@ data = fn_dh_elfstats (
     feature_ftype = ftype,
     stat_quantreg_glo = 0
 );
-data.da <- subset(data, in_xvar == 'nhdp_drainage_sqkm');
+data <- subset(data, !is.na(out_rsq));
+data.da <- subset(data, in_xvar == 'nhdp_drainage_sqkm') ;
 data.mean <- subset(data, in_xvar == 'erom_q0001e_mean');
 data.jan <- subset(data, in_xvar == 'erom_q0001e_jan');
 data.feb <- subset(data, in_xvar == 'erom_q0001e_feb');
