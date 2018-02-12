@@ -6,19 +6,19 @@ site <- "http://deq1.bse.vt.edu/d.dh"    #Specify the site of interest, either d
 #----------------------------------------------
 
 #----FOR RUNNING LOCALLY:
-fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\debug_2.12.18\\"          #Specify location of supporting function .R files
-save_directory <- "C:\\Users\\nrf46657\\Desktop\\debug_2.12.18\\plots"    #Specify location for storing plot images locally
-fxn_vahydro <- "C:\\Users\\nrf46657\\Desktop\\debug_2.12.18\\"  
+fxn_locations <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\r-dh-ecohydro\\ELFGEN\\internal\\"  #Specify location of supporting function .R files
+save_directory <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\plots"                             #Specify location for storing plot images locally
+fxn_vahydro <- "C:\\Users\\nrf46657\\Desktop\\VAHydro Development\\GitHub\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  
 
 #----FOR RUNNING FROM SERVER:
-#fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/"
+#fxn_locations <- "/var/www/R/r-dh-ecohydro/ELFGEN/internal/"
 #save_directory <- "/var/www/html/files/fe/plots"
 #fxn_vahydro <- "/var/www/R/r-dh-ecohydro/Analysis/fn_vahydro-2.0/"
 
 #Load Functions               
 source(paste(fxn_locations,"elf_retrieve_data.R", sep = ""));  #loads function used to retrieve F:E data from VAHydro
-source(paste(fxn_vahydro,"rest_functions.R", sep = "")); 
-source(paste(fxn_vahydro,"rest.private", sep = "")); #load rest username and password, contained in rest.private file
+source(paste(fxn_vahydro,"rest_functions.R", sep = ""));       #loads file containing function that retrieves REST token
+source(paste(fxn_locations,"rest.private", sep = ""));         #load rest username and password, contained in rest.private file
 token <- rest_token(site, token)
 
 #------------------------------------------------------------------------------------------------
