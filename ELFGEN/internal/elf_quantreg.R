@@ -27,6 +27,7 @@ elf_quantreg <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   site <- inputs$site
   sampres <- inputs$sampres
   ghi <- inputs$ghi
+  dataset_tag <- inputs$dataset_tag
 
   #Retain a copy of the full dataset in order to include grey points on plot
   full_dataset <- data
@@ -121,7 +122,8 @@ print(token)
                 stat_quantreg_bkpt = ghi,
                 stat_quantreg_glo = 0,
                 stat_quantreg_ghi = ghi,
-                analysis_timespan = analysis_timespan
+                analysis_timespan = analysis_timespan,
+                dataset_tag = dataset_tag
               )
             );
 print("Storing quantile regression.");
