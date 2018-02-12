@@ -72,7 +72,7 @@ inputs <- list(
   #analysis_timespan = '1990-2000',#used to subset data on date range 
   analysis_timespan = 'full',      #used to plot for entire timespan 
 
-  send_to_rest = "YES",            #"YES" to push ELF statistic outputs to VAHydro
+  send_to_rest = "NO",            #"YES" to push ELF statistic outputs to VAHydro
   station_agg = "max",             #Specify aggregation to only use the "max" NT value for each station or "all" NT values
   sampres = 'species',                  
   #sampres = 'maj_fam_gen_spec',                  
@@ -88,13 +88,13 @@ inputs <- list(
   ymax = "NO",       #Plot using breakpoint at x-value corresponding to max y-value (YES or NO)
   twopoint = "NO",   #Plot using basic two-point ELF method (YES or NO)
   pw_it_RS = "NO",   #Plot using PWIT *with the regression to the right of the breakpoint included (YES or NO)
-  glo = 1,   # PWIT Breakpoint lower guess (sqmi/cfs)
-  ghi = 525, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
+  glo = 10,   # PWIT Breakpoint lower guess (sqmi/cfs)
+  ghi = 1000, # PWIT Breakpoint upper guess (sqmi/cfs) - also used as DA breakpoint for elf_quantreg method
              # ghi values determined from ymax analyses,  q25 = 72 
              #                                            q50 = 205 
              #                                            q75 = 530
   token = token,
-  dataset_tag = "test_tag_1"
+  dataset_tag = ""
 ) 
 
 #------------------------------------------------------------------------------------------------
