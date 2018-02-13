@@ -6,7 +6,7 @@ rest_token <- function(base_url, token, rest_uname = FALSE, rest_pw = FALSE) {
   csrf_url <- paste(base_url,"restws/session/token/",sep="/");
 
   #IF THE OBJECTS 'rest_uname' or 'rest_pw' DONT EXIST, USER INPUT REQUIRED
-  if (!is.character(rest_uname) | !(is.character(rest_upass))){
+  if (!is.character(rest_uname) | !(is.character(rest_pw))){
     
     rest_uname <- c() #initialize username object
     rest_pw <- c()    #initialize password object
