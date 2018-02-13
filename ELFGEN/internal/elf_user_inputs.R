@@ -19,7 +19,7 @@ fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2
 source(paste(fxn_locations,"elf_retrieve_data.R", sep = ""));  #loads function used to retrieve F:E data from VAHydro
 source(paste(fxn_vahydro,"rest_functions.R", sep = ""));       #loads file containing function that retrieves REST token
 rest_uname = FALSE;
-rest_upass = FALSE;
+rest_pw = FALSE;
 source(paste(fxn_locations,"rest.private", sep = ""));         #load rest username and password, contained in rest.private file
 token <- rest_token(site, token, rest_uname, rest_upass);
 
