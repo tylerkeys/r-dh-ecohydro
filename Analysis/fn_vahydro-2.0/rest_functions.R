@@ -1,13 +1,12 @@
 library(httr);
 library(stringr);
 
-#rest_token <- function(base_url, token, rest_uname = FALSE, rest_pw = FALSE){
-  rest_token <- function(base_url, token){
+rest_token <- function(base_url, token, rest_uname = FALSE, rest_pw = FALSE) {
   #Cross-site Request Forgery Protection (Token required for POST and PUT operations)
   csrf_url <- paste(base_url,"restws/session/token/",sep="/");
 
   #IF THE OBJECTS 'rest_uname' or 'rest_pw' DONT EXIST, USER INPUT REQUIRED
-  if (!exists("rest_uname") | !exists("rest_pw")){
+  if (!is.character(rest_uname) | !(is.character(rest_upass))){
     
     rest_uname <- c() #initialize username object
     rest_pw <- c()    #initialize password object
