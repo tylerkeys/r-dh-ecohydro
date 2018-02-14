@@ -26,6 +26,7 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
   station_agg <- inputs$station_agg
   site <- inputs$site
   sampres <- inputs$sampres
+  dataset_tag <- inputs$dataset_tag
   
   full_dataset <- data
 
@@ -99,7 +100,8 @@ elf_twopoint <- function(inputs, data, x_metric_code, y_metric_code, ws_ftype_co
             stat_quantreg_bkpt = xmin.ymax,
             stat_quantreg_glo = 0, #Need to store 0 value in order to query using this property
             stat_quantreg_ghi = 0, #Need to store 0 value in order to query using this property
-            analysis_timespan = analysis_timespan
+            analysis_timespan = analysis_timespan,
+            dataset_tag = dataset_tag
           )
         );
         print("Storing quantile regression.");
