@@ -7,7 +7,15 @@ options(timeout=480); # set timeout to twice default level to avoid abort due to
 #dirname(rstudioapi::getActiveDocumentContext()$path);
 
 
-fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid = 37) {
+fn_get_rundata <- function(
+  elementid = -1, 
+  runid = -1, 
+  varname = 'Qout',  
+  startdate = '1984-10-01', 
+  enddate = '2005-09-30', 
+  scenid = 37) 
+{
+  
   if (elementid == -1 ) {
     return(FALSE);
   }
@@ -19,12 +27,12 @@ fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid 
   # Authentication
   hash <- "4291a2a64734da6e0c223a77f4ac5b9f"
   username <- "robertwb"
-
+  
   # Set up query for batch of model objects
   # Internal variable to construct the query
   urlbase<-"http://deq1.bse.vt.edu/om/remote/get_modelData.php?elementid="
   print(paste("Getting data for run ", runid, " for element ", elementid))      # creates the whole url by pasting the element and run ids into it
-  filename<-paste(urlbase, elementid, "&variables=", varname, "&runid=", runid, "&startdate=1984-10-01&enddate=2005-09-30", sep = "")
+  filename<-paste(urlbase, elementid, "&variables=", varname, "&runid=", runid, "&startdate=", startdate, "&enddate=", enddate, sep = "")
   print(paste("From ", filename));
   
   dat = try(read.table(filename, header = TRUE, sep = ",")) 
@@ -43,7 +51,7 @@ fn_get_rundata <- function(elementid = -1, runid = -1, varname = 'Qout', scenid 
   
 }
 
-fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
+fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37, refresh = TRUE) {
   if (elementid == -1 ) {
     return(FALSE);
   }
@@ -55,7 +63,7 @@ fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
   # Authentication
   hash <- "4291a2a64734da6e0c223a77f4ac5b9f"
   username <- "robertwb"
-
+  
   # just get the run file
   urlbase<-"http://deq1.bse.vt.edu/om/remote/get_modelData.php?operation=11&elementid="
   print(paste("Getting output file for run ", runid, " for element ", elementid))      # creates the whole url by pasting the element and run ids into it
@@ -67,7 +75,13 @@ fn_get_runfile <- function(elementid = -1, runid = -1, scenid = 37) {
     print(paste("Error: empty file ", filename))
     return (FALSE);
   }
+  unzname = basename(as.character(finfo$output_file));
+  run_date = as.Date(as.character(finfo$run_date));
   filename = as.character(finfo$remote_url);
+  if ( file.exists(unzname) ) {
+    mod_date = file.mtime(unzname)
+    stale = (run_date > mod_date);
+  }
   if (finfo$compressed == 1) {
     print(paste("Downloading Compressed Run File ", filename));
     download.file(filename,'tempfile',mode="wb", method = "libcurl");
