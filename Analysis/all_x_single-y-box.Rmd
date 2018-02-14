@@ -8,6 +8,7 @@ output: word_document
 library('gdata')
 fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
 source(paste(fxn_locations,"query_elf_statistics.R", sep = "/")); 
+options(timeout=120);
 
 bundle <- 'watershed';
 ftype <- 'nhd_huc8';

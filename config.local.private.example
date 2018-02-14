@@ -1,0 +1,3 @@
+fxn_locations <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\";
+save_directory <- "C:\\Workspace\\tmp\\";
+fxn_vahydro <- "C:\\usr\\local\\home\\git\\r-dh-ecohydro\\Analysis\\fn_vahydro-2.0\\"  

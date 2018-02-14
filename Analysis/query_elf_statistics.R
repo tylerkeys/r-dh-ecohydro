@@ -29,6 +29,7 @@ fn_dh_elfstats <- function(
     stat_quantreg_ghi = "all",
     feature_ftype = "all",
     xvar = "all",
+    save_directory = FALSE,
     dataset_tag = "all") {
 
 #------------------------------------------------------------------
@@ -38,6 +39,12 @@ fn_dh_elfstats <- function(
     XV <-xvar
     YV <-yvar
     elf_statistics <- read.table(elf_statistics,header = TRUE, sep = ",");
-    write.csv(elf_statistics, file = paste(save_directory, "ELF_Stats_Breakpoints.", region, ".", YV, ".", XV,".csv", sep = ""), row.names = FALSE, quote = TRUE) #,qmethod = "double",sep = " "
+    if (is.character(save_directory)) {
+      write.csv(
+        elf_statistics, 
+        file = paste(save_directory, "ELF_Stats_Breakpoints.", region, ".", YV, ".", XV,".csv", sep = ""), 
+        row.names = FALSE, 
+        quote = TRUE) #,qmethod = "double",sep = " "
+      };
     return (elf_statistics);
 }

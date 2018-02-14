@@ -1,0 +1,63 @@
+---
+title: "ELF Regional Comparisons"
+output: word_document
+---
+
+```{r, echo=FALSE}
+# install.packages('gdata')
+library('gdata')
+fxn_locations = '/usr/local/home/git/r-dh-ecohydro/Analysis';
+source(paste(fxn_locations,"query_elf_statistics.R", sep = "/")); 
+options(timeout=120);
+
+bundle <- 'watershed';
+ftype <- 'nhd_huc8';
+metric <- 'aqbio_nt_total';
+
+q_ftype <- "fe_quantreg";
+analysis_timespan = "full";
+sampres = "species";
+selected <- 'all'; # all or hydrocode
+quantile <- 0.8;
+stat_quantreg_glo <- 0; # use 1 for pwit, 0 for quantreg
+# ftype = fe_quantreg, fe_quantreg_pwit, fe_quantreg_ymax, fe_twopoint
+# analysis_timespan = full, 1990-2010, 1970-1980, ...
+data8 = fn_dh_elfstats (
+    ftype = q_ftype,
+    analysis_timespan = analysis_timespan,
+    yvar = metric,
+    xvar = 'erom_q0001e_mean',
+    sampres = sampres,
+    stat_quantreg_qu = quantile,
+    feature_ftype = ftype,
+    stat_quantreg_glo = 0,
+    save_directory = '/Workspace/tmp/'
+);
+
+data6 = fn_dh_elfstats (
+    ftype = q_ftype,
+    analysis_timespan = analysis_timespan,
+    yvar = metric,
+    xvar = 'erom_q0001e_mean',
+    sampres = sampres,
+    stat_quantreg_qu = quantile,
+    feature_ftype = 'nhd_huc6',
+    stat_quantreg_glo = 0,
+    save_directory = '/Workspace/tmp/'
+);
+
+ecoiii = fn_dh_elfstats (
+    ftype = q_ftype,
+    analysis_timespan = analysis_timespan,
+    yvar = metric,
+    xvar = 'erom_q0001e_mean',
+    sampres = sampres,
+    stat_quantreg_qu = quantile,
+    feature_ftype = 'ecoregion_iii',
+    stat_quantreg_glo = 0,
+    save_directory = '/Workspace/tmp/'
+);
+n <- c('HUC 8', 'HUC 6', 'Eco-region iii')
+boxplot(data8$out_rsq_adj, data6$out_rsq_adj, ecoiii$out_rsq_adj, names = n);
+
+```
